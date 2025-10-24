@@ -24,6 +24,7 @@ namespace RecipeControl.Views.RegisterModuleViews
         {
             InitializeComponent();
 
+            // Load view model to context
             DataContext = registerModuleViewModel;
         }
     }

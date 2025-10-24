@@ -12,7 +12,7 @@
     <Folder Include="Data\Scripts\" />
     <Folder Include="Models\DTOs\" />
     <Folder Include="Commands\" />
-    <Folder Include="Converters\" />
+    <Folder Include="Models\Database\" />
     <Folder Include="Resources\Images\" />
     <Folder Include="Resources\Templates\" />
     <Folder Include="Resources\Styles\" />

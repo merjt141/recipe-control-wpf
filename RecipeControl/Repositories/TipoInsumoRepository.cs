@@ -22,10 +22,10 @@ namespace RecipeControl.Repositories
 
         public async Task<List<TipoInsumo>> GetAllAsync()
         {
-            var sql = @"SELECT * FROM TIPO_INSUMO";
+            var sql = @"SELECT * FROM TipoInsumo;";
 
             var parametro = new SqlParameter();
-            var datos = await _databaseService.ExecuteQueryAsync(sql, parametro);
+            var datos = await _databaseService.ExecuteQueryAsync(sql, null);
 
             return MapDataTableToArray(datos);
         }
@@ -45,11 +45,11 @@ namespace RecipeControl.Repositories
         {
             return new TipoInsumo()
             {
-                TipoInsumoId = Convert.ToInt32(row["id"]),
-                Codigo = row["codigo"].ToString() ?? "",
-                Descripcion = row["descripcion"].ToString() ?? "",
-                FechaCreacion = Convert.ToDateTime(row["fecha_creacion"]),
-                FechaModificacion = Convert.ToDateTime(row["fecha_modificacion"])
+                TipoInsumoId = Convert.ToInt32(row["TipoInsumoId"]),
+                Codigo = row["Codigo"].ToString() ?? "",
+                Descripcion = row["Descripcion"].ToString() ?? "",
+                FechaCreacion = Convert.ToDateTime(row["FechaCreacion"]),
+                FechaModificacion = Convert.ToDateTime(row["FechaModificacion"])
             };
         }
     }

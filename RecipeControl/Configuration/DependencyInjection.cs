@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RecipeControl.Helpers;
 using RecipeControl.Helpers.Interfaces;
+using RecipeControl.Repositories;
+using RecipeControl.Repositories.Interfaces;
 using RecipeControl.Services.Database;
 using RecipeControl.Services.Interfaces;
 using RecipeControl.Services.Serial;
@@ -38,8 +40,11 @@ namespace RecipeControl.Configuration
             services.AddSingleton<ISerialService, SerialService>();
             services.AddSingleton<IDatabaseService, DatabaseService>();
 
+            // ===== REPOSITORIOS =====
+            services.AddScoped<ITipoInsumoRepository, TipoInsumoRepository>();
+
             // ===== HELPERS =====
-            services.AddSingleton<IConnectionHelper, ConnectionHelper>();
+            services.AddTransient<IConnectionHelper, ConnectionHelper>();
 
             // ===== VIEWMODELS =====
             services.AddTransient<MainViewModel>();
@@ -49,6 +54,7 @@ namespace RecipeControl.Configuration
             // ===== VIEWS =====
             services.AddTransient<MainWindow>();
             services.AddTransient<RegisterModuleView>();
+            services.AddTransient<TestConnectionView>();
 
             return services;
         }
