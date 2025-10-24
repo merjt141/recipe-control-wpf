@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Scripts\" />
+    <Folder Include="Models\DTOs\" />
+    <Folder Include="Commands\" />
+    <Folder Include="Converters\" />
+    <Folder Include="Resources\Images\" />
+    <Folder Include="Resources\Templates\" />
+    <Folder Include="Resources\Styles\" />
+    <Folder Include="Validators\" />
+    <Folder Include="Core\" />
+    <Folder Include="Services\Reports\" />
+    <Folder Include="ViewModels\Base\" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<!-- ADO(mi patrona).NET for SQL Server -->
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.2" />
+
+	<!-- .NET Core configuration-->
+	<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.10" />
+	  
+	<!-- Dependency Injection-->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
+    
+	<!-- Serial Communication-->  
+	<PackageReference Include="System.IO.Ports" Version="9.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
