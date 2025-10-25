@@ -1,15 +1,13 @@
-﻿using RecipeControl.Models.Entities;
+﻿using RecipeControl.Commands;
+using RecipeControl.Models.DTOs;
+using RecipeControl.Models.Entities;
 using RecipeControl.Repositories.Interfaces;
 using RecipeControl.Services.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace RecipeControl.ViewModels.RegisterModule
 {
@@ -17,39 +15,171 @@ namespace RecipeControl.ViewModels.RegisterModule
     {
         private readonly IDatabaseService _databaseService;
         private readonly ITipoInsumoRepository _tipoInsumoRepository;
+        private readonly IRegistroPesoRepository _registroPesoRepository;
+        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IInsumoRepository _insumoRepository;
+        private readonly IRecetaVersionRepository _recetaVersionRepository;
 
         public RegisterModuleViewModel(
             IDatabaseService databaseService, 
-            ITipoInsumoRepository tipoInsumoRepository)
+            ITipoInsumoRepository tipoInsumoRepository,
+            IRegistroPesoRepository registroPesoRepository,
+            IUsuarioRepository usuarioRepository,
+            IInsumoRepository insumoRepository,
+            IRecetaVersionRepository recetaVersionRepository)
         {
             _databaseService = databaseService;
             _tipoInsumoRepository = tipoInsumoRepository;
+            _registroPesoRepository = registroPesoRepository;
+            _usuarioRepository = usuarioRepository;
+            _insumoRepository = insumoRepository;
+            _recetaVersionRepository = recetaVersionRepository;
 
             // Initialize commands
+            CaptureWeightCommand = new AsyncRelayCommand(async _ => await CaptureWeight());
+            RegisterWeightCommand = new AsyncRelayCommand(async _ => await RegisterWeight());
 
             // Subscribe to events
 
             // Load initial data
-            _ = LoadTipoInsumosAsync();
+            _ = LoadOnStartUp();
+        }
+        private async Task LoadOnStartUp()
+        {
+            await LoadUserAsync();
+            await LoadRecetaVersionList();
+            //_selectedRecetaVersionId = 1001;
+            await LoadTipoInsumoList();
+            await LoadWeightRegisters();
         }
 
-        private async Task LoadTipoInsumosAsync()
+        private async Task LoadUserAsync()
+        {
+            var user = await _usuarioRepository.GetByIdAsync(1002);
+            if (user != null)
+            {
+                UsuarioBalanza = user;
+                OnPropertyChanged(nameof(UsuarioBalanza));
+            }
+        }
+
+        private async Task LoadRecetaVersionList()
+        {
+            var result = await _recetaVersionRepository.GetAllActiveAsync();
+            RecetaVersionList = new ObservableCollection<RecetaVersionDTO>(result);
+            SelectedRecetaVersionId = RecetaVersionList.FirstOrDefault()?.RecetaVersionId ?? 1001;
+            OnPropertyChanged(nameof(RecetaVersionList));
+            OnPropertyChanged(nameof(SelectedRecetaVersionId));
+        }
+
+        private async Task LoadTipoInsumoList()
         {
             var result = await _tipoInsumoRepository.GetAllAsync();
-
             TipoInsumoList = new ObservableCollection<TipoInsumo>(result);
             SelectedTipoInsumoId = TipoInsumoList.FirstOrDefault()?.TipoInsumoId ?? 1001;
-
             OnPropertyChanged(nameof(TipoInsumoList));
             OnPropertyChanged(nameof(SelectedTipoInsumoId));
         }
 
+        private async Task LoadInsumoList()
+        {
+            var result = await _insumoRepository.GetInsumoByRecipeAndTypeAsync(_selectedRecetaVersionId, _selectedTipoInsumoId);
+            InsumoList = new ObservableCollection<Insumo>(result);
+            SelectedInsumoId = InsumoList.FirstOrDefault()?.InsumoId ?? 1001;
+            OnPropertyChanged(nameof(InsumoList));
+            OnPropertyChanged(nameof(SelectedInsumoId));
+        }
+
+        private async Task LoadWeightRegisters()
+        {
+            var result = await _registroPesoRepository.GetAllDataGridDTO();
+            RegistroPesoList = new ObservableCollection<RegisterWeightDataGridDTO>(result);
+            OnPropertyChanged(nameof(RegistroPesoList));
+        }
+
+        #region Private Properties
+        private int _selectedTipoInsumoId;
+        private int _selectedInsumoId;
+        private int _selectedRecetaVersionId;
+        #endregion
+
         #region Properties
 
-        public string UserName { get; set; } = "DefaultUser";
+        public Usuario UsuarioBalanza { get; set; } = new Usuario();
+        public RegistroPeso RegistroPesoBalanza { get; set; } = new RegistroPeso();
         public ObservableCollection<TipoInsumo> TipoInsumoList { get; set; } = new ObservableCollection<TipoInsumo>();
-        public int SelectedTipoInsumoId { get; set; }
+        public int SelectedTipoInsumoId 
+        { 
+            get => _selectedTipoInsumoId; 
+            set
+            {
+                if (_selectedTipoInsumoId != value)
+                {
+                    _selectedTipoInsumoId = value;
+                    OnPropertyChanged(nameof(SelectedTipoInsumoId));
+                    _ = LoadInsumoList();
+                }
+            } 
+        }
+        public ObservableCollection<Insumo> InsumoList { get; set; } = new ObservableCollection<Insumo>();
+        public int SelectedInsumoId
+        { 
+            get => _selectedInsumoId; 
+            set
+            {
+                if (_selectedInsumoId != value)
+                {
+                    _selectedInsumoId = value;
+                    OnPropertyChanged(nameof(SelectedInsumoId));
+                }
+            } 
+        }
+        public ObservableCollection<RecetaVersionDTO> RecetaVersionList { get; set; } = new ObservableCollection<RecetaVersionDTO>();
+        public int SelectedRecetaVersionId
+        {
+            get => _selectedRecetaVersionId;
+            set
+            {
+                if (_selectedRecetaVersionId != value)
+                {
+                    _selectedRecetaVersionId = value;
+                    OnPropertyChanged(nameof(SelectedRecetaVersionId));
+                    _ = LoadInsumoList();
+                }
+            }
+        }
+        public bool IsInRange { get; set; }
+        public ObservableCollection<RegisterWeightDataGridDTO> RegistroPesoList { get; set; } = new ObservableCollection<RegisterWeightDataGridDTO>();
 
+        #endregion
+
+        #region Commands
+        public ICommand CaptureWeightCommand { get; }
+        public ICommand RegisterWeightCommand { get; }
+        #endregion
+
+        #region Methods
+
+        private async Task CaptureWeight()
+        {
+            await Task.Delay(500); // Simulate delay for capturing weight
+            Debug.WriteLine($"Capturing weight: {RegistroPesoBalanza.Valor} kg");
+        }
+
+        private async Task RegisterWeight()
+        {
+            RegistroPesoBalanza.Descripcion = "";
+            RegistroPesoBalanza.RecetaVersionId = 1002;
+            RegistroPesoBalanza.InsumoId = SelectedInsumoId;
+            RegistroPesoBalanza.BalanzaId = 1001;
+            RegistroPesoBalanza.UsuarioId = UsuarioBalanza.UsuarioId;
+            RegistroPesoBalanza.FechaPesado = DateTime.Now;
+
+            // Update the RegistroPesoBalanza in the database and get the inserted record with ID
+            RegistroPesoBalanza = await _registroPesoRepository.InsertAsync(RegistroPesoBalanza);
+            OnPropertyChanged(nameof(RegistroPesoBalanza));
+            await LoadWeightRegisters();
+        }
         #endregion
 
         #region INotifyPropertyChanged

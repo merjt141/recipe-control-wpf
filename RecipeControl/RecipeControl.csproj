@@ -10,8 +10,6 @@
 
   <ItemGroup>
     <Folder Include="Data\Scripts\" />
-    <Folder Include="Models\DTOs\" />
-    <Folder Include="Commands\" />
     <Folder Include="Models\Database\" />
     <Folder Include="Resources\Images\" />
     <Folder Include="Resources\Templates\" />

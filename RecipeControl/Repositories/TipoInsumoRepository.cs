@@ -24,33 +24,31 @@ namespace RecipeControl.Repositories
         {
             var sql = @"SELECT * FROM TipoInsumo;";
 
-            var parametro = new SqlParameter();
-            var datos = await _databaseService.ExecuteQueryAsync(sql, null);
+            var datos = await _databaseService.ExecuteQueryAsync(sql);
 
-            return MapDataTableToArray(datos);
+            return MapDataTableToList(datos);
         }
 
-        private List<TipoInsumo> MapDataTableToArray(DataTable data)
+        #region Data Modeling
+
+        private static List<TipoInsumo> MapDataTableToList(DataTable data)
         {
             var list = new List<TipoInsumo>();
             foreach (DataRow row in data.Rows)
             {
-                list.Add(MapDataRowToClass(row));
+                list.Add(new TipoInsumo()
+                {
+                    TipoInsumoId = Convert.ToInt32(row["TipoInsumoId"]),
+                    Codigo = row["Codigo"].ToString() ?? "",
+                    Descripcion = row["Descripcion"].ToString() ?? "",
+                    FechaCreacion = Convert.ToDateTime(row["FechaCreacion"]),
+                    FechaModificacion = Convert.ToDateTime(row["FechaModificacion"])
+                });
             }
 
             return list;
         }
 
-        private TipoInsumo MapDataRowToClass(DataRow row)
-        {
-            return new TipoInsumo()
-            {
-                TipoInsumoId = Convert.ToInt32(row["TipoInsumoId"]),
-                Codigo = row["Codigo"].ToString() ?? "",
-                Descripcion = row["Descripcion"].ToString() ?? "",
-                FechaCreacion = Convert.ToDateTime(row["FechaCreacion"]),
-                FechaModificacion = Convert.ToDateTime(row["FechaModificacion"])
-            };
-        }
+        #endregion
     }
 }

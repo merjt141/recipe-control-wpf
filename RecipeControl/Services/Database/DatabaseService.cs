@@ -87,7 +87,7 @@ namespace RecipeControl.Services.Database
                 lastException);
         }
 
-        public async Task<DataTable> ExecuteQueryAsync(string sql, SqlParameter[] parameters)
+        public async Task<DataTable> ExecuteQueryAsync(string sql, SqlParameter[]? parameters)
         {
             try
             {

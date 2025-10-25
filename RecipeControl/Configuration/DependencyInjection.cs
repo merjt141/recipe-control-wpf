@@ -42,6 +42,10 @@ namespace RecipeControl.Configuration
 
             // ===== REPOSITORIOS =====
             services.AddScoped<ITipoInsumoRepository, TipoInsumoRepository>();
+            services.AddScoped<IRegistroPesoRepository, RegistroPesoRepository>();
+            services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+            services.AddScoped<IInsumoRepository, InsumoRepository>();
+            services.AddScoped<IRecetaVersionRepository, RecetaVersionRepository>();
 
             // ===== HELPERS =====
             services.AddTransient<IConnectionHelper, ConnectionHelper>();

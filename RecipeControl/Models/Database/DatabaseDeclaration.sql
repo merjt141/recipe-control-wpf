@@ -1,5 +1,5 @@
 -- ============================================
--- Script de Creaci髇 de Base de Datos
+-- Script de Creaci锟絥 de Base de Datos
 -- Sistema de Balanzas
 -- ============================================
 
@@ -259,6 +259,7 @@ BEGIN
 	CREATE USER RecipeOperator FOR LOGIN RecipeOperator;
 	exec sp_addrolemember 'db_datareader', 'RecipeOperator';
 	exec sp_addrolemember 'db_datawriter', 'RecipeOperator';
+	GRANT EXECUTE TO RecipeOperator;
 END
 
 
@@ -273,7 +274,6 @@ BEGIN
 		('LIQUIDO',''),
 		('SOLIDO',''),
 		('GRANULAR','');
-
 	PRINT('Datos de ejemplo TipoInsumo insertados')
 END
 
@@ -283,7 +283,6 @@ BEGIN
 	VALUES
 		('HAMAYONEAH1',''),
 		('HAMAYOLIGHTLAS','');
-
 	PRINT('Datos de ejemplo Receta insertados')
 END
 
@@ -293,7 +292,6 @@ BEGIN
 	VALUES
 		('GENESIS',''),
 		('FRIMA','');
-
 	PRINT('Datos de ejemplo Formula insertados')
 END
 
@@ -303,7 +301,6 @@ BEGIN
 	VALUES
 		('R71MD15',''),
 		('R71MD6','');
-
 	PRINT('Datos de ejemplo Balanza insertados')
 END
 
@@ -311,7 +308,7 @@ IF NOT EXISTS (SELECT * FROM Insumo)
 BEGIN
 	INSERT INTO Insumo(Codigo, Descripcion, TipoInsumoId, Unidad)
 	VALUES
-		('HDAEVEG2','', 1004, 'kg'),
+		('HDAEVEG2','Medici贸n por fluj贸metro', 1001, 'kg'),
 		('MC31220003','', 1001, 'kg'),
 		('MC31220004','', 1001, 'kg'),
 		('MS004RALP','', 1002, 'kg'),
@@ -322,6 +319,220 @@ BEGIN
 		('MS00ATX01','', 1001, 'kg'),
 		('MC31220006','', 1001, 'kg'),
 		('MC31220007','', 1002, 'kg');
-
 	PRINT('Datos de ejemplo Insumo insertados')
 END
+
+IF NOT EXISTS (SELECT * FROM Usuario)
+BEGIN
+	INSERT INTO Usuario(Nombre, ClaveHash)
+	VALUES
+		('Admin','21232f297a57a5a743894a0e4a801fc3'),
+		('Operador','d3d9446802a44259755d38e6d163e820');
+	PRINT('Datos de ejemplo Usuario insertados')
+END
+
+IF NOT EXISTS (SELECT * FROM RecetaVersion)
+BEGIN
+	INSERT INTO RecetaVersion(RecetaId, VersionNum, Descripcion, Estado)
+	VALUES
+		(1001, 1, 'Primera version de Hamayoneah', 0),
+		(1001, 2, 'Segunda version de Hamayoneah', 1),
+		(1002, 1, 'Primera version de Hamayolight', 1);
+	PRINT('Datos de ejemplo RecetaVersion insertados')
+END
+
+IF NOT EXISTS (SELECT * FROM DetalleReceta)
+BEGIN
+	INSERT INTO DetalleReceta(Codigo, Descripcion, FormulaId, RecetaVersionId, InsumoId, Valor, Variacion)
+	VALUES
+		('DR1001','', 1001, 1001, 1002, 13.0000, 0.50),
+		('DR1002','', 1001, 1001, 1003, 10.3000, 0.50),
+		('DR1003','', 1001, 1001, 1004, 10.5000, 0.20),
+		('DR1004','', 1001, 1001, 1005, 12.1000, 0.50),
+		('DR1005','', 1001, 1002, 1002, 13.7000, 0.10),
+		('DR1006','', 1001, 1002, 1003, 10.3000, 0.50),
+		('DR1007','', 1001, 1002, 1004, 10.5400, 0.05),
+		('DR1008','', 1001, 1002, 1005, 12.1000, 0.50),
+		('DR1009','', 1001, 1003, 1003, 8.2000, 0.08),
+		('DR1010','', 1001, 1003, 1005, 7.0100, 0.07);
+	PRINT('Datos de ejemplo DetalleReceta insertados')
+END
+
+IF NOT EXISTS (SELECT * FROM RegistroPeso)
+BEGIN
+	INSERT INTO RegistroPeso(Codigo, Descripcion, RecetaVersionId, InsumoId, BalanzaId, UsuarioId, Valor, Estado)
+	VALUES
+		('RP1001','', 1002, 1002, 1001, 1001, 13.2000, 0),
+		('RP1002','', 1002, 1003, 1001, 1001, 10.1000, 0),
+		('RP1003','', 1002, 1004, 1002, 1002, 10.6000, 0),
+		('RP1004','', 1002, 1005, 1002, 1001, 12.3000, 0),
+		('RP1005','', 1002, 1002, 1001, 1002, 13.0000, 1),
+		('RP1006','', 1002, 1003, 1001, 1001, 11.1000, 1),
+		('RP1007','', 1002, 1004, 1002, 1002, 11.6000, 1),
+		('RP1008','', 1002, 1005, 1002, 1001, 12.1000, 1);
+	PRINT('Datos de ejemplo RegistroPeso insertados')
+END
+
+IF NOT EXISTS (SELECT * FROM RegistroBatch)
+BEGIN
+	INSERT INTO RegistroBatch(Codigo, Descripcion, Lote, DetalleRecetaId, RegistroPesoId, FechaPreparacion)
+	VALUES
+		('RB1001','', 5001, 1005, 1001, GETDATE()),
+		('RB1002','', 5001, 1006, 1002, GETDATE()),
+		('RB1003','', 5001, 1007, 1003, GETDATE()),
+		('RB1004','', 5001, 1008, 1004, GETDATE());
+	PRINT('Datos de ejemplo RegistroBatch insertados')
+END
+
+IF NOT EXISTS (SELECT * FROM RegistroBatchWarehouse)
+BEGIN
+	INSERT INTO RegistroBatchWarehouse(Lote, FormulaId, RecetaVersionId, InsumoId, ValorSetpoint, Variacion, RegistroPesoId, FechaPreparacion)
+	VALUES
+		(5001, 1001, 1002, 1002, 13.7000, 0.10, 1001, GETDATE()),
+		(5001, 1001, 1002, 1003, 10.3000, 0.50, 1002, GETDATE()),
+		(5001, 1001, 1002, 1004, 10.5400, 0.05, 1003, GETDATE()),
+		(5001, 1001, 1002, 1005, 12.1000, 0.50, 1004, GETDATE());
+	PRINT('Datos de ejemplo RegistroBatchWarehouse insertados')
+END
+
+-- ============================================
+-- Creaci贸n de procedimientos almacenados
+-- ============================================
+
+IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_InsertarNuevoRegistroPeso')
+	DROP PROCEDURE sp_InsertarNuevoRegistroPeso;
+GO
+
+CREATE PROCEDURE sp_InsertarNuevoRegistroPeso
+	@Descripcion		VARCHAR(40),
+	@RecetaVersionId	INT,
+	@InsumoId			INT,
+	@BalanzaId			INT,
+	@UsuarioId			INT,
+	@FechaPesado		DATETIME,
+	@Valor				DECIMAL(10,4)
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @CodigoInsumo VARCHAR(20);
+	DECLARE @NuevoId INT;
+	DECLARE @Codigo VARCHAR(20);
+
+	-- Obtener el c贸digo del insumo
+	SELECT @CodigoInsumo = Codigo 
+	FROM Insumo 
+	WHERE InsumoId = @InsumoId;
+
+	-- Obetener el siguiente registro de peso
+	SELECT @NuevoId = ISNULL(COUNT(RegistroPesoId), 1000) + 1
+	FROM RegistroPeso
+	WHERE InsumoId = @InsumoId;
+
+	-- Generar el c贸digo del nuevo registro de peso
+	SET @Codigo = @CodigoInsumo + '-' + RIGHT('000000' + CAST(@NuevoId AS VARCHAR(6)), 6);
+
+	INSERT INTO RegistroPeso (Codigo, Descripcion, RecetaVersionId, InsumoId, BalanzaId, UsuarioId, FechaPesado, Valor)
+	OUTPUT INSERTED.*
+	VALUES (@Codigo, @Descripcion, @RecetaVersionId, @InsumoId, @BalanzaId, @UsuarioId, @FechaPesado, @Valor)
+END
+GO
+
+IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_GetInsumosPorRecetaYTipo')
+	DROP PROCEDURE sp_GetInsumosPorRecetaYTipo
+GO
+
+CREATE PROCEDURE sp_GetInsumosPorRecetaYTipo
+	@RecetaVersionId	INT,
+	@TipoInsumoId		INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	WITH DetalleRecetaFiltrado AS
+	(
+		SELECT
+			DetalleRecetaId,
+			InsumoId
+		FROM DetalleReceta
+		WHERE RecetaVersionId = @RecetaVersionId
+	)
+	SELECT 
+		i.InsumoId AS InsumoId,
+		i.Codigo AS Codigo,
+		i.Descripcion AS Descripcion,
+		i.TipoInsumoId AS TipoInsumoId,
+		i.Unidad AS Unidad,
+		i.FechaCreacion AS FechaCreacion,
+		i.FechaModificacion AS FechaModificacion
+	FROM DetalleRecetaFiltrado d
+	INNER JOIN Insumo i ON d.InsumoId = i.InsumoId
+	WHERE i.TipoInsumoId = @TipoInsumoId;
+	
+END
+GO
+
+-- ============================================
+-- Creaci贸n de vistas
+-- ============================================
+IF EXISTS (SELECT * FROM sys. views WHERE name = 'vw_RegistroPesoDataGrid')
+	DROP VIEW vw_RegistroPesoDataGrid;
+GO
+
+CREATE VIEW vw_RegistroPesoDataGrid
+AS
+SELECT TOP 100
+    rp.RegistroPesoId,
+    i.Codigo AS InsumoCodigo,
+    ti.Codigo AS TipoInsumoCodigo,
+    rp.FechaPesado,
+    rp.Valor,
+    u.Nombre AS UsuarioNombre,
+    rp.Codigo,
+    CAST(rp.Estado AS INT) AS Estado
+FROM RegistroPeso rp
+JOIN Insumo i ON rp.InsumoId = i.InsumoId
+JOIN TipoInsumo ti ON i.TipoInsumoId = ti.TipoInsumoId
+JOIN Usuario u ON rp.UsuarioId = u.UsuarioId
+ORDER BY rp.FechaPesado DESC, rp.RegistroPesoId DESC;
+GO
+
+IF EXISTS (SELECT * FROM sys. views WHERE name = 'vw_RegistroPesoActivoDataGrid')
+	DROP VIEW vw_RegistroPesoActivoDataGrid;
+GO
+
+CREATE VIEW vw_RegistroPesoActivoDataGrid
+AS
+SELECT TOP 100
+    rp.RegistroPesoId,
+    i.Codigo AS InsumoCodigo,
+    ti.Codigo AS TipoInsumoCodigo,
+    rp.FechaPesado,
+    rp.Valor,
+    u.Nombre AS UsuarioNombre,
+    rp.Codigo,
+    CAST(rp.Estado AS INT) AS Estado
+FROM RegistroPeso rp
+JOIN Insumo i ON rp.InsumoId = i.InsumoId
+JOIN TipoInsumo ti ON i.TipoInsumoId = ti.TipoInsumoId
+JOIN Usuario u ON rp.UsuarioId = u.UsuarioId
+WHERE Estado = 1
+ORDER BY rp.FechaPesado DESC, rp.RegistroPesoId DESC;
+GO
+
+IF EXISTS (SELECT * FROM sys.views WHERE name = 'vw_GetAllRecetasActivas')
+	DROP VIEW vw_GetAllRecetasActivas;
+GO
+
+CREATE VIEW vw_GetAllRecetasActivas
+AS
+SELECT
+	rv.RecetaVersionId as RecetaVersionId,
+	rv.RecetaId as RecetaId,
+	r.Codigo as RecetaCodigo,
+	rv.VersionNum as VersionNum,
+	rv.Estado as Estado
+FROM RecetaVersion rv
+JOIN Receta r ON rv.RecetaId = r.RecetaId
+WHERE rv.Estado = 1;
+GO
