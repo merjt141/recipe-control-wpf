@@ -472,6 +472,45 @@ BEGIN
 END
 GO
 
+IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_GetRegistrosDisponibles')
+	DROP PROCEDURE sp_GetRegistrosDisponibles
+GO
+
+CREATE PROCEDURE sp_GetRegistrosDisponibles
+	@InsumoId			INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	SELECT
+		Codigo,
+		Valor
+	FROM RegistroPeso
+	WHERE InsumoId = @InsumoId
+		AND Estado = 1
+	ORDER BY FechaPesado DESC;
+END
+GO
+
+IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_LeerDatosReceta')
+	DROP PROCEDURE sp_LeerDatosReceta
+GO
+CREATE PROCEDURE sp_LeerDatosReceta
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT
+		r.Codigo AS RecetaCodigo,
+		i.Codigo AS InsumoCodigo,
+		dr.Valor AS Valor
+		FROM DetalleReceta dr
+		JOIN RecetaVersion rv ON dr.RecetaVersionId = rv.RecetaVersionId
+		JOIN Receta r ON rv.RecetaId = r.RecetaId
+		JOIN Insumo i ON dr.InsumoId = i.InsumoId
+		WHERE rv.Estado = 1
+END
+GO
+
 -- ============================================
 -- Creación de vistas
 -- ============================================
