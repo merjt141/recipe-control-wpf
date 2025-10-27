@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RecipeControl.Services.Serial
+namespace RecipeControl.Services.Ethernet
 {
-    class BalanzaProtocol
+    public interface IEthernetService
     {
     }
 }

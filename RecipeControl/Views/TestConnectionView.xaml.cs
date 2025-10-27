@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using RecipeControl.Configuration;
 using RecipeControl.Helpers.Interfaces;
-using RecipeControl.Services.Interfaces;
+using RecipeControl.Services.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;

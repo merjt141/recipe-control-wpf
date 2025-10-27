@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RecipeControl.Helpers;
 using RecipeControl.Helpers.Interfaces;
+using RecipeControl.Models.Config;
 using RecipeControl.Repositories;
 using RecipeControl.Repositories.Interfaces;
 using RecipeControl.Services.Database;
-using RecipeControl.Services.Interfaces;
 using RecipeControl.Services.Serial;
 using RecipeControl.ViewModels;
 using RecipeControl.ViewModels.RegisterModule;
@@ -33,6 +33,8 @@ namespace RecipeControl.Configuration
             // ===== CONFIGURATION =====
             services.AddSingleton(config);
             services.AddSingleton(config.ConnectionStrings);
+            services.AddSingleton(config.ScaleEthernetPorts);
+            services.AddSingleton(config.ScaleEthernetPorts.Ports);
             services.AddSingleton(config.SerialPort);
             services.AddSingleton(config.Database);
 
@@ -75,17 +77,15 @@ namespace RecipeControl.Configuration
 
             try
             {
-                var databaseService = serviceProvider.GetService<IDatabaseService>();
-                if (databaseService == null)
+                if (serviceProvider.GetService<IDatabaseService>() is null)
                 {
-                    errorMessage = "IDatabaseService no está registrado.";
+                    errorMessage = $"{nameof(IDatabaseService)} no está registrado.";
                     return false;
                 }
 
-                var serialService = serviceProvider.GetService<ISerialService>();
-                if (serialService == null)
+                if (serviceProvider.GetService<ISerialService>() is null)
                 {
-                    errorMessage = "ISerialService no estpa registrado";
+                    errorMessage = $"{nameof(ISerialService)} no está registrado";
                     return false;
                 }
 

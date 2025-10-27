@@ -1,4 +1,6 @@
 ﻿using RecipeControl.Models.DTOs;
+using RecipeControl.Models.Entities;
+using RecipeControl.Repositories.Interfaces.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace RecipeControl.Repositories.Interfaces
 {
-    public interface IRecetaVersionRepository
+    public interface IRecetaVersionRepository :  IBaseRepository<RecetaVersion>
     {
         Task<List<RecetaVersionDTO>> GetAllActiveAsync();
     }

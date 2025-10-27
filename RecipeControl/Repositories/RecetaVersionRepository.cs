@@ -1,7 +1,7 @@
 ﻿using RecipeControl.Models.DTOs;
 using RecipeControl.Models.Entities;
 using RecipeControl.Repositories.Interfaces;
-using RecipeControl.Services.Interfaces;
+using RecipeControl.Services.Database;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,6 +15,31 @@ namespace RecipeControl.Repositories
     public class RecetaVersionRepository : IRecetaVersionRepository
     {
         private readonly IDatabaseService _databaseService;
+
+        public Task<RecetaVersion> GetByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<RecetaVersion>> GetAllAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<RecetaVersion> InsertAsync(RecetaVersion entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UpdateAsync(RecetaVersion entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
 
         public RecetaVersionRepository(IDatabaseService databaseService)
         {

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RecipeControl.Repositories.Interfaces
+namespace RecipeControl.Services.Serial
 {
-    public interface IBaseRepository
+    public interface ISerialService
     {
     }
 }

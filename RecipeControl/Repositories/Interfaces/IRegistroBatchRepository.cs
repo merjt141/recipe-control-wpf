@@ -1,5 +1,5 @@
-﻿using RecipeControl.Models.Entities;
-using RecipeControl.Repositories.Interfaces.Base;
+﻿using RecipeControl.Repositories.Interfaces.Base;
+using RecipeControl.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RecipeControl.Repositories.Interfaces
 {
-    public interface IUsuarioRepository : IBaseRepository<Usuario>
+    public interface IRegistroBatchRepository : IBaseRepository<RegistroBatch>
     {
     }
 }

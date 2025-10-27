@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using RecipeControl.Services.Interfaces;
 using RecipeControl.Models.Entities;
 using System.Data.SqlTypes;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using RecipeControl.Services.Database;
 
 namespace RecipeControl.Repositories
 {
@@ -19,6 +19,74 @@ namespace RecipeControl.Repositories
         public InsumoRepository(IDatabaseService databaseService)
         {
             _databaseService = databaseService;
+        }
+
+        public async Task<Insumo> GetByIdAsync(int id)
+        {
+            var sql = @"SELECT * FROM Insumo WHERE InsumoId = @InsumoId;";
+            var parameters = new SqlParameter[]
+            {
+                new SqlParameter("@InsumoId", id)
+            };
+            var datos = await _databaseService.ExecuteQueryAsync(sql, parameters);
+            var list = MapDataTableToList(datos);
+            return list.FirstOrDefault() ?? new Insumo();
+        }
+
+        public async Task<IEnumerable<Insumo>> GetAllAsync()
+        {
+            var sql = @"SELECT * FROM Insumo;";
+            var datos = await _databaseService.ExecuteQueryAsync(sql);
+            return MapDataTableToList(datos);
+        }
+
+        public async Task<Insumo> InsertAsync(Insumo entity)
+        {
+            var sql = @"INSERT INTO Insumo (Codigo, Descripcion, TipoInsumoId, Unidad)
+                        VALUES (@Codigo, @Descripcion, @TipoInsumoId, @Unidad);
+                        SELECT SCOPE_IDENTITY();";
+            var parameters = new SqlParameter[]
+            {
+                new SqlParameter("@Codigo", entity.Codigo),
+                new SqlParameter("@Descripcion", entity.Descripcion ?? (object)SqlString.Null),
+                new SqlParameter("@TipoInsumoId", entity.TipoInsumoId),
+                new SqlParameter("@Unidad", entity.Unidad),
+            };
+            var result = await _databaseService.ExecuteCommandAsync(sql, parameters);
+            entity.InsumoId = Convert.ToInt32(result);
+            return entity;
+        }
+
+        public async Task<bool> UpdateAsync(Insumo entity)
+        {
+            var sql = @"UPDATE Insumo
+                        SET Codigo = @Codigo,
+                            Descripcion = @Descripcion,
+                            TipoInsumoId = @TipoInsumoId,
+                            Unidad = @Unidad,
+                            FechaModificacion = GETDATE()
+                        WHERE InsumoId = @InsumoId;";
+            var parameters = new SqlParameter[]
+            {
+                new SqlParameter("@Codigo", entity.Codigo),
+                new SqlParameter("@Descripcion", entity.Descripcion ?? (object)SqlString.Null),
+                new SqlParameter("@TipoInsumoId", entity.TipoInsumoId),
+                new SqlParameter("@Unidad", entity.Unidad),
+                new SqlParameter("@InsumoId", entity.InsumoId)
+            };
+            var result = await _databaseService.ExecuteCommandAsync(sql, parameters);
+            return result > 0;
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var sql = @"DELETE FROM Insumo WHERE InsumoId = @InsumoId;";
+            var parameters = new SqlParameter[]
+            {
+                new SqlParameter("@InsumoId", id)
+            };
+            var result = await _databaseService.ExecuteCommandAsync(sql, parameters);
+            return result > 0;
         }
 
         public async Task<List<Insumo>> GetInsumosByTypeAsync(int tipoInsumoId)

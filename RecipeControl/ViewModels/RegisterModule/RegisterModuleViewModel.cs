@@ -2,7 +2,7 @@
 using RecipeControl.Models.DTOs;
 using RecipeControl.Models.Entities;
 using RecipeControl.Repositories.Interfaces;
-using RecipeControl.Services.Interfaces;
+using RecipeControl.Services.Database;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -48,8 +48,8 @@ namespace RecipeControl.ViewModels.RegisterModule
         {
             await LoadUserAsync();
             await LoadRecetaVersionList();
-            //_selectedRecetaVersionId = 1001;
             await LoadTipoInsumoList();
+            await LoadInsumoList();
             await LoadWeightRegisters();
         }
 
@@ -67,7 +67,7 @@ namespace RecipeControl.ViewModels.RegisterModule
         {
             var result = await _recetaVersionRepository.GetAllActiveAsync();
             RecetaVersionList = new ObservableCollection<RecetaVersionDTO>(result);
-            SelectedRecetaVersionId = RecetaVersionList.FirstOrDefault()?.RecetaVersionId ?? 1001;
+            _selectedRecetaVersionId = RecetaVersionList.FirstOrDefault()?.RecetaVersionId ?? 1001;
             OnPropertyChanged(nameof(RecetaVersionList));
             OnPropertyChanged(nameof(SelectedRecetaVersionId));
         }
@@ -76,7 +76,7 @@ namespace RecipeControl.ViewModels.RegisterModule
         {
             var result = await _tipoInsumoRepository.GetAllAsync();
             TipoInsumoList = new ObservableCollection<TipoInsumo>(result);
-            SelectedTipoInsumoId = TipoInsumoList.FirstOrDefault()?.TipoInsumoId ?? 1001;
+            _selectedTipoInsumoId = TipoInsumoList.FirstOrDefault()?.TipoInsumoId ?? 1001;
             OnPropertyChanged(nameof(TipoInsumoList));
             OnPropertyChanged(nameof(SelectedTipoInsumoId));
         }

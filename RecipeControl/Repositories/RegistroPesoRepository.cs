@@ -2,7 +2,7 @@
 using RecipeControl.Models.DTOs;
 using RecipeControl.Models.Entities;
 using RecipeControl.Repositories.Interfaces;
-using RecipeControl.Services.Interfaces;
+using RecipeControl.Services.Database;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -21,25 +21,16 @@ namespace RecipeControl.Repositories
             _databaseService = databaseService;
         }
 
-        public async Task<List<RegistroPeso>> GetAllAsync()
+        public Task<RegistroPeso> GetByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<RegistroPeso>> GetAllAsync()
         {
             var sql = @"SELECT * FROM RegistroPeso;";
             var datos = await _databaseService.ExecuteQueryAsync(sql);
             return MapDataTableToList(datos);
-        }
-
-        public async Task<List<RegistroPeso>> GetAllActiveAsync()
-        {
-            var sql = @"SELECT * FROM RegistroPeso WHERE Estado = 1;";
-            var datos = await _databaseService.ExecuteQueryAsync(sql);
-            return MapDataTableToList(datos);
-        }
-
-        public async Task<List<RegisterWeightDataGridDTO>> GetAllDataGridDTO()
-        {
-            var sql = @"SELECT * FROM vw_RegistroPesoDataGrid;";
-            var datos = await _databaseService.ExecuteQueryAsync(sql);
-            return MapDataTableToDataGridDTOList(datos);
         }
 
         public async Task<RegistroPeso> InsertAsync(RegistroPeso registroPeso)
@@ -58,6 +49,30 @@ namespace RecipeControl.Repositories
             var result = await _databaseService.ExecuteStoredProcedureAsync(sql, parameters);
             registroPeso = MapDataRowToClass(result.Rows[0]);
             return registroPeso;
+        }
+
+        public Task<bool> UpdateAsync(RegistroPeso entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<RegistroPeso>> GetAllActiveAsync()
+        {
+            var sql = @"SELECT * FROM RegistroPeso WHERE Estado = 1;";
+            var datos = await _databaseService.ExecuteQueryAsync(sql);
+            return MapDataTableToList(datos);
+        }
+
+        public async Task<List<RegisterWeightDataGridDTO>> GetAllDataGridDTO()
+        {
+            var sql = @"SELECT * FROM vw_RegistroPesoDataGrid;";
+            var datos = await _databaseService.ExecuteQueryAsync(sql);
+            return MapDataTableToDataGridDTOList(datos);
         }
 
         #region Data Modeling

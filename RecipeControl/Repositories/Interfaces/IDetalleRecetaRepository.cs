@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RecipeControl.Repositories.Interfaces
 {
-    public interface IUsuarioRepository : IBaseRepository<Usuario>
+    public interface IDetalleRecetaRepository : IBaseRepository<DetalleReceta>
     {
     }
 }

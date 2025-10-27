@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RecipeControl.Models.Entities.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RecipeControl.Models.Entities
 {
-    public class RecetaVersion
+    public class RecetaVersion : IBaseEntity
     {
         public int RecetaVersionId { get; set; }
         public int RecetaId { get; set; }

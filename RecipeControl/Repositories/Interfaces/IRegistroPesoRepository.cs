@@ -1,5 +1,6 @@
 ﻿using RecipeControl.Models.DTOs;
 using RecipeControl.Models.Entities;
+using RecipeControl.Repositories.Interfaces.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +9,9 @@ using System.Threading.Tasks;
 
 namespace RecipeControl.Repositories.Interfaces
 {
-    public interface IRegistroPesoRepository
+    public interface IRegistroPesoRepository : IBaseRepository<RegistroPeso>
     {
-        Task<List<RegistroPeso>> GetAllAsync();
         Task<List<RegistroPeso>> GetAllActiveAsync();
         Task<List<RegisterWeightDataGridDTO>> GetAllDataGridDTO();
-        Task<RegistroPeso> InsertAsync(RegistroPeso registroPeso);
     }
 }

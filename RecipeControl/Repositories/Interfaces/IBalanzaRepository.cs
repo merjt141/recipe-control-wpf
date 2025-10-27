@@ -1,14 +1,14 @@
 ﻿using RecipeControl.Models.Entities;
-using RecipeControl.Repositories.Interfaces.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RecipeControl.Repositories.Interfaces.Base;
 
 namespace RecipeControl.Repositories.Interfaces
 {
-    public interface IUsuarioRepository : IBaseRepository<Usuario>
+    public interface IBalanzaRepository : IBaseRepository<Balanza>
     {
     }
 }

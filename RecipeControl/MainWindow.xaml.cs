@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RecipeControl.Configuration;
-using RecipeControl.Services.Interfaces;
+using RecipeControl.Services.Database;
 using RecipeControl.Views.RegisterModuleViews;
 using System.Text;
 using System.Windows;

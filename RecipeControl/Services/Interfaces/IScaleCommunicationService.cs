@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace RecipeControl.Services.Interfaces
 {
-    public interface ISerialService
+    public interface IScaleCommunicationService
     {
+        Task<VariantType> SendAndReceiveAsync(VariantType request);
     }
 }

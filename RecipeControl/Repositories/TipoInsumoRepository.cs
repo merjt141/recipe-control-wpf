@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using RecipeControl.Models.Entities;
 using RecipeControl.Repositories.Interfaces;
-using RecipeControl.Services.Interfaces;
+using RecipeControl.Services.Database;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -20,13 +20,33 @@ namespace RecipeControl.Repositories
             _databaseService = databaseService;
         }
 
-        public async Task<List<TipoInsumo>> GetAllAsync()
+        public Task<TipoInsumo> GetByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<TipoInsumo>> GetAllAsync()
         {
             var sql = @"SELECT * FROM TipoInsumo;";
 
             var datos = await _databaseService.ExecuteQueryAsync(sql);
 
             return MapDataTableToList(datos);
+        }
+
+        public Task<TipoInsumo> InsertAsync(TipoInsumo entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UpdateAsync(TipoInsumo entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteAsync(int id)
+        {
+            throw new NotImplementedException();
         }
 
         #region Data Modeling

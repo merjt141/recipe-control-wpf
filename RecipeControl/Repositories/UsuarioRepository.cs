@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using RecipeControl.Models.Entities;
 using RecipeControl.Repositories.Interfaces;
-using RecipeControl.Services.Interfaces;
+using RecipeControl.Services.Database;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -21,7 +21,16 @@ namespace RecipeControl.Repositories
             _databaseService = databaseService;
         }
 
-        public async Task<List<Usuario>> GetAllAsync()
+        public async Task<Usuario> GetByIdAsync(int usuarioId)
+        {
+            var sql = @"SELECT * FROM Usuario WHERE UsuarioId = @UsuarioId;";
+            var parametro = new SqlParameter("@UsuarioId", SqlDbType.Int) { Value = usuarioId };
+            var datos = await _databaseService.ExecuteQueryAsync(sql, parametro);
+            var lista = MapDataTableToList(datos);
+            return lista.FirstOrDefault() ?? new Usuario();
+        }
+
+        public async Task<IEnumerable<Usuario>> GetAllAsync()
         {
             var sql = @"SELECT * FROM Usuario;";
             var parametro = new SqlParameter();
@@ -31,14 +40,24 @@ namespace RecipeControl.Repositories
             return MapDataTableToList(datos);
         }
 
-        public async Task<Usuario?> GetByIdAsync(int usuarioId)
+        public Task<Usuario> InsertAsync(Usuario entity)
         {
-            var sql = @"SELECT * FROM Usuario WHERE UsuarioId = @UsuarioId;";
-            var parametro = new SqlParameter("@UsuarioId", SqlDbType.Int) { Value = usuarioId };
-            var datos = await _databaseService.ExecuteQueryAsync(sql, parametro);
-            var lista = MapDataTableToList(datos);
-            return lista.FirstOrDefault();
+            throw new NotImplementedException();
         }
+
+        public Task<bool> UpdateAsync(Usuario entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        
+
+        
 
         #region Data Modeling
 
