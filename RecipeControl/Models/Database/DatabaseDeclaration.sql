@@ -345,16 +345,21 @@ IF NOT EXISTS (SELECT * FROM DetalleReceta)
 BEGIN
 	INSERT INTO DetalleReceta(Codigo, Descripcion, FormulaId, RecetaVersionId, InsumoId, Valor, Variacion)
 	VALUES
-		('DR1001','', 1001, 1001, 1002, 13.0000, 0.50),
-		('DR1002','', 1001, 1001, 1003, 10.3000, 0.50),
-		('DR1003','', 1001, 1001, 1004, 10.5000, 0.20),
-		('DR1004','', 1001, 1001, 1005, 12.1000, 0.50),
-		('DR1005','', 1001, 1002, 1002, 13.7000, 0.10),
-		('DR1006','', 1001, 1002, 1003, 10.3000, 0.50),
-		('DR1007','', 1001, 1002, 1004, 10.5400, 0.05),
-		('DR1008','', 1001, 1002, 1005, 12.1000, 0.50),
-		('DR1009','', 1001, 1003, 1003, 8.2000, 0.08),
-		('DR1010','', 1001, 1003, 1005, 7.0100, 0.07);
+		('DR1001','', 1001, 1001, 1001, 0.0000, 0.50),
+		('DR1002','', 1001, 1001, 1002, 13.0000, 0.50),
+		('DR1003','', 1001, 1001, 1003, 10.3000, 0.50),
+		('DR1004','', 1001, 1001, 1004, 10.5000, 0.50),
+		('DR1005','', 1001, 1001, 1005, 12.1000, 0.50),
+		('DR1006','', 1001, 1002, 1001, 0.0000, 0.50),
+		('DR1007','', 1001, 1002, 1002, 13.7000, 0.50),
+		('DR1008','', 1001, 1002, 1003, 10.3000, 0.50),
+		('DR1009','', 1001, 1002, 1004, 10.5400, 0.50),
+		('DR1010','', 1001, 1002, 1005, 12.1000, 0.50),
+		('DR1011','', 1001, 1003, 1001, 0.0000, 0.50),
+		('DR1012','', 1001, 1003, 1002, 9.60000, 0.50),
+		('DR1013','', 1001, 1003, 1003, 0.0000, 0.50),
+		('DR1014','', 1001, 1003, 1004, 13.0000, 0.50),
+		('DR1015','', 1001, 1003, 1005, 0.0000, 0.50);
 	PRINT('Datos de ejemplo DetalleReceta insertados')
 END
 
@@ -492,22 +497,48 @@ BEGIN
 END
 GO
 
-IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_LeerDatosReceta')
-	DROP PROCEDURE sp_LeerDatosReceta
+IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_LeerDetalleReceta')
+	DROP PROCEDURE sp_LeerDetalleReceta
 GO
-CREATE PROCEDURE sp_LeerDatosReceta
+CREATE PROCEDURE sp_LeerDetalleReceta
 AS
 BEGIN
 	SET NOCOUNT ON;
 	SELECT
-		r.Codigo AS RecetaCodigo,
-		i.Codigo AS InsumoCodigo,
+		r.RecetaId AS RecetaId,
+		i.InsumoId AS InsumoId,
 		dr.Valor AS Valor
 		FROM DetalleReceta dr
 		JOIN RecetaVersion rv ON dr.RecetaVersionId = rv.RecetaVersionId
 		JOIN Receta r ON rv.RecetaId = r.RecetaId
 		JOIN Insumo i ON dr.InsumoId = i.InsumoId
 		WHERE rv.Estado = 1
+END
+GO
+
+IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_LeerDetalleRecetaMinimo')
+	DROP PROCEDURE sp_LeerDetalleRecetaMinimo
+GO
+CREATE PROCEDURE sp_LeerDetalleRecetaMinimo
+	@RecetaId	INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT
+		r.RecetaId AS RecetaId,
+		r.Codigo AS RecetaCodigo,
+		i.InsumoId AS InsumoId,
+		i.Unidad AS InsumoUnidad,
+		i.Codigo AS InsumoCodigo,
+		dr.Valor AS Valor,
+		dr.Variacion AS Variacion
+		FROM DetalleReceta dr
+		JOIN RecetaVersion rv ON dr.RecetaVersionId = rv.RecetaVersionId
+		JOIN Receta r ON rv.RecetaId = r.RecetaId
+		JOIN Insumo i ON dr.InsumoId = i.InsumoId
+		WHERE rv.RecetaId = @RecetaId
+			AND rv.Estado = 1
+			AND dr.Valor > 0
 END
 GO
 
