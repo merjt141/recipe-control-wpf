@@ -401,6 +401,12 @@ BEGIN
 END
 
 -- ============================================
+-- Creación de índices de base de datos
+-- ============================================
+
+CREATE INDEX IDX_RegistroPeso_Codigo ON RegistroPeso (Codigo);
+
+-- ============================================
 -- Creación de procedimientos almacenados
 -- ============================================
 
@@ -497,6 +503,28 @@ BEGIN
 END
 GO
 
+IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_GetRegistrosDisponiblesPorCodigo')
+	DROP PROCEDURE sp_GetRegistrosDisponiblesPorCodigo
+GO
+
+CREATE PROCEDURE sp_GetRegistrosDisponiblesPorCodigo
+	@pInsumoCodigo			VARCHAR(20)
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	SELECT TOP(5)
+		rp.Codigo AS RegistroPesoCodigo,
+		rp.Valor AS RegistroPesoValor,
+		i.Unidad AS InsumoUnidad
+	FROM RegistroPeso rp
+	JOIN Insumo i ON rp.InsumoId = i.InsumoId
+	WHERE i.Codigo = @pInsumoCodigo
+		AND rp.Estado = 1
+	ORDER BY rp.FechaPesado DESC;
+END
+GO
+
 IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_LeerDetalleReceta')
 	DROP PROCEDURE sp_LeerDetalleReceta
 GO
@@ -525,6 +553,7 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	SELECT
+		dr.RecetaVersionId AS RecetaVersionId,
 		r.RecetaId AS RecetaId,
 		r.Codigo AS RecetaCodigo,
 		i.InsumoId AS InsumoId,
@@ -539,6 +568,44 @@ BEGIN
 		WHERE rv.RecetaId = @RecetaId
 			AND rv.Estado = 1
 			AND dr.Valor > 0
+END
+GO
+
+IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_GuardarRegistroBatchWarehouse')
+	DROP PROCEDURE sp_GuardarRegistroBatchWarehouse
+GO
+CREATE PROCEDURE sp_GuardarRegistroBatchWarehouse
+	@Lote					INT,
+	@FormulaId				INT,
+	@RecetaId				INT,
+	@InsumoCodigos			VARCHAR(120),
+	@ValorSetpoints			VARCHAR(120),
+	@Variacions				VARCHAR(120),
+	@RegistroPesoCodigos	VARCHAR(120)
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	-- Variable declarations
+	DECLARE @RecetaVersionId	INT;
+	DECLARE @InsumoCodigo		VARCHAR(20);
+	DECLARE @ValorSetpoint		DECIMAL(10,4);
+	DECLARE @Variacion			DECIMAL(5,2);
+	DECLARE @RegistroPesoCodigo	VARCHAR(20);
+
+	DECLARE @Pos				INT;
+	DECLARE @NextPos			INT;
+
+	-- Get the active RecetaVersionId for the given RecetaId
+	SELECT @RecetaVersionId = RecetaVersionId
+	FROM RecetaVersion
+	WHERE RecetaId = @RecetaId
+		AND Estado = 1;
+	
+	-- Initialize position for parsing
+	SET @Pos = 1;
+	WHILE @Pos <= LEN(@InsumoCodigos)
+
 END
 GO
 
