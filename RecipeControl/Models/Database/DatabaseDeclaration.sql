@@ -1,7 +1,11 @@
--- ============================================
--- Script de Creaci�n de Base de Datos
+-- ====================================================================================================================================
+-- Script de Creación de Base de Datos
 -- Sistema de Balanzas
--- ============================================
+-- Autor: Juan Armando Joyo Taype
+-- Fecha: 2025/10/30
+-- Versión: 1.0.0
+-- Descripción: Script para la creación de la base de datos REPRECIPE, tablas, índices, procedimientos almacenados y vistas.
+-- ====================================================================================================================================
 
 USE master;
 GO
@@ -15,14 +19,14 @@ ELSE
 BEGIN
 	PRINT 'Base de datos ya existe'
 END
-go
+GO
 
 USE REPRECIPE;
 GO
 
--- ============================================
+-- ====================================================================================================================================
 -- Tabla: Receta
--- ============================================
+-- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Receta')
 BEGIN
 	CREATE TABLE Receta (
@@ -37,9 +41,9 @@ BEGIN
 END
 GO
 
--- ============================================
+-- ====================================================================================================================================
 -- Tabla: TipoInsumo
--- ============================================
+-- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'TipoInsumo')
 BEGIN
 	CREATE TABLE TipoInsumo (
@@ -52,9 +56,9 @@ BEGIN
 END
 GO
 
--- ============================================
+-- ====================================================================================================================================
 -- Tabla: Balanza
--- ============================================
+-- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Balanza')
 BEGIN
 	CREATE TABLE Balanza (
@@ -67,9 +71,9 @@ BEGIN
 END
 GO
 
--- ============================================
+-- ====================================================================================================================================
 -- Tabla: Usuario
--- ============================================
+-- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Usuario')
 BEGIN
 	CREATE TABLE Usuario (
@@ -84,9 +88,9 @@ BEGIN
 END
 GO
 
--- ============================================
+-- ====================================================================================================================================
 -- Tabla: RecetaVersion
--- ============================================
+-- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'RecetaVersion')
 BEGIN
 	CREATE TABLE RecetaVersion (
@@ -104,9 +108,9 @@ BEGIN
 END
 GO
 
--- ============================================
+-- ====================================================================================================================================
 -- Tabla: Formula
--- ============================================
+-- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Formula')
 BEGIN
 	CREATE TABLE Formula (
@@ -119,9 +123,9 @@ BEGIN
 END
 GO
 
--- ============================================
+-- ====================================================================================================================================
 -- Tabla: Insumo
--- ============================================
+-- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Insumo')
 BEGIN
 	CREATE TABLE Insumo (
@@ -138,9 +142,9 @@ BEGIN
 END
 GO
 
--- ============================================
+-- ====================================================================================================================================
 -- Tabla: DetalleReceta
--- ============================================
+-- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'DetalleReceta')
 BEGIN
 	CREATE TABLE DetalleReceta (
@@ -162,9 +166,9 @@ BEGIN
 END
 GO
 
--- ============================================
+-- ====================================================================================================================================
 -- Tabla: RegistroPeso
--- ============================================
+-- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'RegistroPeso')
 BEGIN
 	CREATE TABLE RegistroPeso (
@@ -190,9 +194,9 @@ BEGIN
 END
 GO
 
--- ============================================
+-- ====================================================================================================================================
 -- Tabla: RegistroBatch
--- ============================================
+-- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'RegistroBatch')
 BEGIN
 	CREATE TABLE RegistroBatch (
@@ -212,9 +216,9 @@ BEGIN
 END
 GO
 
--- ============================================
+-- ====================================================================================================================================
 -- Tabla: RegistroBatchWarehouse
--- ============================================
+-- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'RegistroBatchWarehouse')
 BEGIN
 	CREATE TABLE RegistroBatchWarehouse (
@@ -223,6 +227,7 @@ BEGIN
 		FormulaId INT NOT NULL,
 		RecetaVersionId INT NOT NULL,
 		InsumoId INT NOT NULL,
+		Usuario VARCHAR(20) NOT NULL,
 		ValorSetpoint DECIMAL(10,4) NOT NULL,
 		Variacion DECIMAL(5,2) NOT NULL,
 		RegistroPesoId INT NOT NULL,
@@ -238,9 +243,9 @@ BEGIN
 END
 GO
 
--- ============================================
+-- ====================================================================================================================================
 -- Login: Login creation
--- ============================================
+-- ====================================================================================================================================
 
 USE MASTER;
 GO
@@ -257,23 +262,27 @@ GO
 IF NOT EXISTS (SELECT * FROM REPRECIPE.sys.sysusers WHERE name = 'RecipeOperator')
 BEGIN
 	CREATE USER RecipeOperator FOR LOGIN RecipeOperator;
-	exec sp_addrolemember 'db_datareader', 'RecipeOperator';
-	exec sp_addrolemember 'db_datawriter', 'RecipeOperator';
+
+	-- Asignar roles y permisos
+	EXEC sp_addrolemember 'db_datareader', 'RecipeOperator';
+	EXEC sp_addrolemember 'db_datawriter', 'RecipeOperator';
+
+	-- Permisos adicionales si es necesario
 	GRANT EXECUTE TO RecipeOperator;
 END
 
 
--- ============================================
+-- ====================================================================================================================================
 -- Ingreso de datos de pruebas
--- ============================================
+-- ====================================================================================================================================
 
 IF NOT EXISTS (SELECT * FROM TipoInsumo)
 BEGIN
 	INSERT INTO TipoInsumo(Codigo, Descripcion)
 	VALUES
 		('LIQUIDO',''),
-		('SOLIDO',''),
-		('GRANULAR','');
+		('GRANULAR',''),
+		('POLVO','');
 	PRINT('Datos de ejemplo TipoInsumo insertados')
 END
 
@@ -299,8 +308,8 @@ IF NOT EXISTS (SELECT * FROM Balanza)
 BEGIN
 	INSERT INTO Balanza(Codigo, Descripcion)
 	VALUES
-		('R71MD15',''),
-		('R71MD6','');
+		('R71MD15','Balanza de 15kg FRIMA'),
+		('R71MD6','Balanza de 6 kg FRIMA');
 	PRINT('Datos de ejemplo Balanza insertados')
 END
 
@@ -308,17 +317,28 @@ IF NOT EXISTS (SELECT * FROM Insumo)
 BEGIN
 	INSERT INTO Insumo(Codigo, Descripcion, TipoInsumoId, Unidad)
 	VALUES
-		('HDAEVEG2','Medición por flujómetro', 1001, 'kg'),
-		('MC31220003','', 1001, 'kg'),
-		('MC31220004','', 1001, 'kg'),
-		('MS004RALP','', 1002, 'kg'),
-		('MC31220005','', 1002, 'kg'),
-		('MC31220001','', 1002, 'kg'),
-		('MC31220270','', 1002, 'kg'),
-		('CMC31220002','', 1001, 'kg'),
-		('MS00ATX01','', 1001, 'kg'),
-		('MC31220006','', 1001, 'kg'),
-		('MC31220007','', 1002, 'kg');
+		('HDAEVEG2','Medición por flujómetro', 1001, 'kg'),		-- 1001
+		('MC31220003','', 1001, 'kg'),							-- 1002
+		('MC31220004','', 1001, 'kg'),							-- 1003
+		('MS004RALP','', 1002, 'kg'),							-- 1004
+		('MC31220005','', 1002, 'kg'),							-- 5
+		('MC31220001','', 1002, 'kg'),							-- 6
+		('MC31220270','', 1002, 'kg'),							-- 7
+		('CMC31220002','', 1001, 'kg'),							-- 8
+		('MS00ATX01','', 1001, 'kg'),							-- 9
+		('MC31220006','', 1001, 'kg'),							-- 1010
+		('MC31220007','', 1002, 'kg'),
+		('MS00CCB02','', 1001, 'kg'),
+		('MC31220009','', 1001, 'kg'),
+		('MC31220010','', 1001, 'kg'),
+		('MC31220050','', 1002, 'kg'),							-- 1015
+		('H20MF00001','Medición por flujómetro', 1001, 'kg'),
+		('MC31220011','', 1001, 'kg'),
+		('MC31220015','', 1001, 'kg'),
+		('MS005RALP','', 1002, 'kg'),
+		('MS006RALP','', 1002, 'kg'),							-- 1020
+		('MC31660402','', 1002, 'kg'),
+		('MS00CCB02','', 1001, 'kg');
 	PRINT('Datos de ejemplo Insumo insertados')
 END
 
@@ -345,70 +365,98 @@ IF NOT EXISTS (SELECT * FROM DetalleReceta)
 BEGIN
 	INSERT INTO DetalleReceta(Codigo, Descripcion, FormulaId, RecetaVersionId, InsumoId, Valor, Variacion)
 	VALUES
-		('DR1001','', 1001, 1001, 1001, 0.0000, 0.50),
-		('DR1002','', 1001, 1001, 1002, 13.0000, 0.50),
-		('DR1003','', 1001, 1001, 1003, 10.3000, 0.50),
-		('DR1004','', 1001, 1001, 1004, 10.5000, 0.50),
-		('DR1005','', 1001, 1001, 1005, 12.1000, 0.50),
-		('DR1006','', 1001, 1002, 1001, 0.0000, 0.50),
-		('DR1007','', 1001, 1002, 1002, 13.7000, 0.50),
-		('DR1008','', 1001, 1002, 1003, 10.3000, 0.50),
-		('DR1009','', 1001, 1002, 1004, 10.5400, 0.50),
-		('DR1010','', 1001, 1002, 1005, 12.1000, 0.50),
-		('DR1011','', 1001, 1003, 1001, 0.0000, 0.50),
-		('DR1012','', 1001, 1003, 1002, 9.60000, 0.50),
-		('DR1013','', 1001, 1003, 1003, 0.0000, 0.50),
-		('DR1014','', 1001, 1003, 1004, 13.0000, 0.50),
-		('DR1015','', 1001, 1003, 1005, 0.0000, 0.50);
+		('DR00101','', 1001, 1001, 1001, 16.0000, 0.50),
+		('DR00102','', 1001, 1001, 1002, 13.0000, 0.50),
+		('DR00103','', 1001, 1001, 1003, 10.3000, 0.50),
+		('DR00104','', 1001, 1001, 1004, 11.5000, 0.50),
+		('DR00105','', 1001, 1001, 1005, 12.1000, 0.50),
+		('DR00106','', 1001, 1001, 1006, 13.1000, 0.50),
+		('DR00107','', 1001, 1001, 1007, 14.1000, 0.50),
+		('DR00108','', 1001, 1001, 1008, 12.1000, 0.50),
+		('DR00109','', 1001, 1001, 1009, 11.1000, 0.50),
+		('DR00110','', 1001, 1001, 1010, 13.1000, 0.50),
+		('DR00111','', 1001, 1001, 1011, 12.1000, 0.50),
+		('DR00112','', 1001, 1001, 1012, 10.9000, 0.50),
+		('DR00113','', 1001, 1001, 1013, 11.8000, 0.50),
+		('DR00114','', 1001, 1001, 1014, 13.4000, 0.50),
+		('DR00115','', 1001, 1001, 1015, 14.6000, 0.50),
+		('DR00116','', 1001, 1001, 1016, 12.7000, 0.50),
+
+		('DR00201','', 1001, 1002, 1001, 10.0000, 0.50),
+		('DR00202','', 1001, 1002, 1002, 13.0000, 0.50),
+		('DR00203','', 1001, 1002, 1003, 10.3000, 0.50),
+		('DR00204','', 1001, 1002, 1004, 10.5000, 0.50),
+		('DR00205','', 1001, 1002, 1005, 12.1000, 0.50),
+		('DR00206','', 1001, 1002, 1006, 12.3000, 0.50),
+		('DR00207','', 1001, 1002, 1007, 12.1400, 0.50),
+		('DR00208','', 1001, 1002, 1008, 12.1200, 0.50),
+		('DR00209','', 1001, 1002, 1009, 12.4000, 0.50),
+		('DR00210','', 1001, 1002, 1010, 12.6000, 0.50),
+		('DR00211','', 1001, 1002, 1011, 13.8000, 0.50),
+		('DR00212','', 1001, 1002, 1012, 12.9000, 0.50),
+		('DR00213','', 1001, 1002, 1013, 11.1300, 0.50),
+		('DR00214','', 1001, 1002, 1014, 12.4000, 0.50),
+		('DR00215','', 1001, 1002, 1015, 12.3560, 0.50),
+		('DR00216','', 1001, 1002, 1016, 12.1000, 0.50),
+
+		('DR00301','', 1001, 1003, 1001, 4.0500, 0.50),
+		('DR00301','', 1001, 1003, 1017, 6.4000, 0.50),
+		('DR00301','', 1001, 1003, 1018, 2.0500, 0.50),
+		('DR00301','', 1001, 1003, 1019, 8.8600, 0.50),
+		('DR00301','', 1001, 1003, 1004, 6.0400, 0.50),
+		('DR00301','', 1001, 1003, 1005, 12.3000, 0.50),
+		('DR00301','', 1001, 1003, 1020, 14.0200, 0.50),
+		('DR00301','', 1001, 1003, 1021, 12.0300, 0.50),
+		('DR00301','', 1001, 1003, 1006, 13.5000, 0.50),
+		('DR00301','', 1001, 1003, 1007, 12.6400, 0.50),
+		('DR00301','', 1001, 1003, 1008, 11.0300, 0.50),
+		('DR00301','', 1001, 1003, 1011, 10.0200, 0.50),
+		('DR00301','', 1001, 1003, 1010, 12.4000, 0.50),
+		('DR00301','', 1001, 1003, 1012, 11.2000, 0.50),
+		('DR00301','', 1001, 1003, 1013, 13.1400, 0.50),
+		('DR00301','', 1001, 1003, 1014, 10.0500, 0.50),
+		('DR00301','', 1001, 1003, 1015, 10.0500, 0.50),
+		('DR00301','', 1001, 1003, 1016, 18.3000, 0.50);
 	PRINT('Datos de ejemplo DetalleReceta insertados')
 END
 
-IF NOT EXISTS (SELECT * FROM RegistroPeso)
-BEGIN
-	INSERT INTO RegistroPeso(Codigo, Descripcion, RecetaVersionId, InsumoId, BalanzaId, UsuarioId, Valor, Estado)
-	VALUES
-		('RP1001','', 1002, 1002, 1001, 1001, 13.2000, 0),
-		('RP1002','', 1002, 1003, 1001, 1001, 10.1000, 0),
-		('RP1003','', 1002, 1004, 1002, 1002, 10.6000, 0),
-		('RP1004','', 1002, 1005, 1002, 1001, 12.3000, 0),
-		('RP1005','', 1002, 1002, 1001, 1002, 13.0000, 1),
-		('RP1006','', 1002, 1003, 1001, 1001, 11.1000, 1),
-		('RP1007','', 1002, 1004, 1002, 1002, 11.6000, 1),
-		('RP1008','', 1002, 1005, 1002, 1001, 12.1000, 1);
-	PRINT('Datos de ejemplo RegistroPeso insertados')
-END
-
-IF NOT EXISTS (SELECT * FROM RegistroBatch)
-BEGIN
-	INSERT INTO RegistroBatch(Codigo, Descripcion, Lote, DetalleRecetaId, RegistroPesoId, FechaPreparacion)
-	VALUES
-		('RB1001','', 5001, 1005, 1001, GETDATE()),
-		('RB1002','', 5001, 1006, 1002, GETDATE()),
-		('RB1003','', 5001, 1007, 1003, GETDATE()),
-		('RB1004','', 5001, 1008, 1004, GETDATE());
-	PRINT('Datos de ejemplo RegistroBatch insertados')
-END
-
-IF NOT EXISTS (SELECT * FROM RegistroBatchWarehouse)
-BEGIN
-	INSERT INTO RegistroBatchWarehouse(Lote, FormulaId, RecetaVersionId, InsumoId, ValorSetpoint, Variacion, RegistroPesoId, FechaPreparacion)
-	VALUES
-		(5001, 1001, 1002, 1002, 13.7000, 0.10, 1001, GETDATE()),
-		(5001, 1001, 1002, 1003, 10.3000, 0.50, 1002, GETDATE()),
-		(5001, 1001, 1002, 1004, 10.5400, 0.05, 1003, GETDATE()),
-		(5001, 1001, 1002, 1005, 12.1000, 0.50, 1004, GETDATE());
-	PRINT('Datos de ejemplo RegistroBatchWarehouse insertados')
-END
-
--- ============================================
+-- ====================================================================================================================================
 -- Creación de índices de base de datos
--- ============================================
+-- ====================================================================================================================================
+
+CREATE INDEX IDX_Insumo_Codigo ON Insumo (Codigo);
+GO
+
+CREATE INDEX IDX_DetalleReceta_RecetaVersionId ON DetalleReceta (RecetaVersionId);
+GO
+
+CREATE INDEX IDX_DetalleReceta_InsumoId ON DetalleReceta (InsumoId);
+GO
+
+CREATE INDEX IDX_DetalleReceta_FormulaId ON DetalleReceta (FormulaId);
+GO
 
 CREATE INDEX IDX_RegistroPeso_Codigo ON RegistroPeso (Codigo);
+GO
 
--- ============================================
+CREATE INDEX IDX_RegistroPeso_InsumoId ON RegistroPeso (InsumoId);
+GO
+
+CREATE INDEX IDX_RegistroPeso_Estado ON RegistroPeso (Estado);
+GO
+
+CREATE INDEX IDX_RecetaVersion_RecetaId ON RecetaVersion (RecetaId);
+GO
+
+CREATE INDEX IDX_RecetaVersion_Estado ON RecetaVersion (Estado);
+GO
+
+CREATE INDEX IDX_Usuario_Nombre ON Usuario (Nombre);
+GO
+
+-- ====================================================================================================================================
 -- Creación de procedimientos almacenados
--- ============================================
+-- ====================================================================================================================================
 
 IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_InsertarNuevoRegistroPeso')
 	DROP PROCEDURE sp_InsertarNuevoRegistroPeso;
@@ -508,18 +556,18 @@ IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_GetRegistrosDisponibles
 GO
 
 CREATE PROCEDURE sp_GetRegistrosDisponiblesPorCodigo
-	@pInsumoCodigo			VARCHAR(20)
+	@InsumoCodigo			VARCHAR(20)
 AS
 BEGIN
 	SET NOCOUNT ON;
 
-	SELECT TOP(5)
+	SELECT
 		rp.Codigo AS RegistroPesoCodigo,
 		rp.Valor AS RegistroPesoValor,
 		i.Unidad AS InsumoUnidad
 	FROM RegistroPeso rp
 	JOIN Insumo i ON rp.InsumoId = i.InsumoId
-	WHERE i.Codigo = @pInsumoCodigo
+	WHERE i.Codigo = @InsumoCodigo
 		AND rp.Estado = 1
 	ORDER BY rp.FechaPesado DESC;
 END
@@ -577,41 +625,39 @@ GO
 CREATE PROCEDURE sp_GuardarRegistroBatchWarehouse
 	@Lote					INT,
 	@FormulaId				INT,
-	@RecetaId				INT,
-	@InsumoCodigos			VARCHAR(120),
-	@ValorSetpoints			VARCHAR(120),
-	@Variacions				VARCHAR(120),
-	@RegistroPesoCodigos	VARCHAR(120)
+	@RecetaVersionId		INT,
+	@InsumoId				INT,
+	@ValorSetpoint			DECIMAL(10,4),
+	@Variacion				DECIMAL(5,2),
+	@RegistroPesoCodigo		VARCHAR(20),
+	@FechaPreparacion		DATETIME
 AS
 BEGIN
 	SET NOCOUNT ON;
 
-	-- Variable declarations
-	DECLARE @RecetaVersionId	INT;
-	DECLARE @InsumoCodigo		VARCHAR(20);
-	DECLARE @ValorSetpoint		DECIMAL(10,4);
-	DECLARE @Variacion			DECIMAL(5,2);
-	DECLARE @RegistroPesoCodigo	VARCHAR(20);
+	DECLARE @RegistroPesoId	INT;
 
-	DECLARE @Pos				INT;
-	DECLARE @NextPos			INT;
+	-- Obtener el RegistroPesoId a partir del código proporcionado
+	SELECT @RegistroPesoId = RegistroPesoId
+	FROM RegistroPeso
+	WHERE Codigo = @RegistroPesoCodigo;
 
-	-- Get the active RecetaVersionId for the given RecetaId
-	SELECT @RecetaVersionId = RecetaVersionId
-	FROM RecetaVersion
-	WHERE RecetaId = @RecetaId
-		AND Estado = 1;
-	
-	-- Initialize position for parsing
-	SET @Pos = 1;
-	WHILE @Pos <= LEN(@InsumoCodigos)
+	-- Insertar el nuevo registro en RegistroBatchWarehouse
+	INSERT INTO RegistroBatchWarehouse (Lote, FormulaId, RecetaVersionId, InsumoId, ValorSetpoint, Variacion, RegistroPesoId, FechaPreparacion)
+	VALUES (@Lote, @FormulaId, @RecetaVersionId, @InsumoId, @ValorSetpoint, @Variacion, @RegistroPesoId, @FechaPreparacion);
 
+	-- Marcar el registro de peso como utilizado
+	UPDATE RegistroPeso
+	SET Estado = 0
+	WHERE RegistroPesoId = @RegistroPesoId;
+
+	RETURN 1
 END
 GO
 
--- ============================================
+-- ====================================================================================================================================
 -- Creación de vistas
--- ============================================
+-- ====================================================================================================================================
 IF EXISTS (SELECT * FROM sys. views WHERE name = 'vw_RegistroPesoDataGrid')
 	DROP VIEW vw_RegistroPesoDataGrid;
 GO
