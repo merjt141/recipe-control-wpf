@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Animation;
 
 namespace RecipeControl.Models.Entities
 {
@@ -16,6 +17,7 @@ namespace RecipeControl.Models.Entities
         public int InsumoId { get; set; }
         public decimal ValorSetpoint { get; set; }
         public decimal Variacion { get; set; }
+        public decimal ValorReal { get; set; }
         public int RegistroPesoId { get; set; }
         public DateTime FechaPreparacion { get; set; }
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;

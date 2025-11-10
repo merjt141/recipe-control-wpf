@@ -230,7 +230,8 @@ BEGIN
 		Usuario VARCHAR(20) NOT NULL,
 		ValorSetpoint DECIMAL(10,4) NOT NULL,
 		Variacion DECIMAL(5,2) NOT NULL,
-		RegistroPesoId INT NOT NULL,
+		ValorReal DECIMAL(10,4) NULL,
+		RegistroPesoId INT NULL,
 		FechaPreparacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
@@ -627,8 +628,10 @@ CREATE PROCEDURE sp_GuardarRegistroBatchWarehouse
 	@FormulaId				INT,
 	@RecetaVersionId		INT,
 	@InsumoId				INT,
+	@Usuario				VARCHAR(20),
 	@ValorSetpoint			DECIMAL(10,4),
 	@Variacion				DECIMAL(5,2),
+	@ValorReal				DECIMAL(10,4),
 	@RegistroPesoCodigo		VARCHAR(20),
 	@FechaPreparacion		DATETIME
 AS
@@ -643,8 +646,8 @@ BEGIN
 	WHERE Codigo = @RegistroPesoCodigo;
 
 	-- Insertar el nuevo registro en RegistroBatchWarehouse
-	INSERT INTO RegistroBatchWarehouse (Lote, FormulaId, RecetaVersionId, InsumoId, ValorSetpoint, Variacion, RegistroPesoId, FechaPreparacion)
-	VALUES (@Lote, @FormulaId, @RecetaVersionId, @InsumoId, @ValorSetpoint, @Variacion, @RegistroPesoId, @FechaPreparacion);
+	INSERT INTO RegistroBatchWarehouse (Lote, FormulaId, RecetaVersionId, InsumoId, Usuario, ValorSetpoint, Variacion, ValorReal, RegistroPesoId, FechaPreparacion)
+	VALUES (@Lote, @FormulaId, @RecetaVersionId, @InsumoId, @Usuario, @ValorSetpoint, @Variacion, @ValorReal, @RegistroPesoId, @FechaPreparacion);
 
 	-- Marcar el registro de peso como utilizado
 	UPDATE RegistroPeso
@@ -719,3 +722,38 @@ FROM RecetaVersion rv
 JOIN Receta r ON rv.RecetaId = r.RecetaId
 WHERE rv.Estado = 1;
 GO
+
+IF EXISTS (SELECT * FROM sys. views WHERE name = 'vw_ObtenerRegistrosBatchWarehouse')
+	DROP VIEW vw_ObtenerRegistrosBatchWarehouse;
+GO
+
+CREATE VIEW vw_ObtenerRegistrosBatchWarehouse
+AS
+SELECT
+	rb.RegistroBatchWarehouseId AS RegistroBatchWarehouseId,
+	rb.Lote AS Lote,
+	rb.FormulaId AS FormulaId,
+	f.Codigo AS FormulaCodigo,
+	r.RecetaId AS RecetaId,
+	r.Codigo AS RecetaCodigo,
+	rb.InsumoId AS InsumoId,
+	rb.Usuario AS Usuario,
+	i.Codigo AS InsumoCodigo,
+	rb.ValorSetpoint AS DetalleRecetaValor,
+	i.Unidad AS InsumoUnidad,
+	rb.Variacion AS DetalleRecetaVariacion,
+	rp.RegistroPesoId AS RegistroPesoId,
+	rp.Codigo AS RegistroPesoCodigo,
+	rp.Valor AS RegistroPesoValor,
+	rb.ValorReal AS RegistroBatchWarehouseValorReal,
+	rb.FechaPreparacion AS FechaPreparacion
+FROM RegistroBatchWarehouse rb
+JOIN Formula f ON rb.FormulaId = f.FormulaId
+JOIN RecetaVersion rv ON rb.RecetaVersionId = rv.RecetaVersionId
+JOIN Receta r ON rv.RecetaId = r.RecetaId
+JOIN Insumo i ON rb.InsumoId = i.InsumoId
+JOIN RegistroPeso rp ON rb.RegistroPesoId = rp.RegistroPesoId
+ORDER BY rb.FechaPreparacion DESC, rb.RegistroBatchWarehouseId DESC;
+GO
+
+

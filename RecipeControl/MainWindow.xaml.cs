@@ -2,6 +2,7 @@
 using RecipeControl.Configuration;
 using RecipeControl.Services.Database;
 using RecipeControl.Views.RegisterModuleViews;
+using RecipeControl.Views.ReportModuleViews;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -41,6 +42,12 @@ namespace RecipeControl
         {
             var RegisterModuleView = _serviceProvider.GetRequiredService<RegisterModuleView>();
             RegisterModuleView.Show();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            var ReportModuleView = _serviceProvider.GetRequiredService<ReportModuleView>();
+            ReportModuleView.Show();
         }
     }
 }

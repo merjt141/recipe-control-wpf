@@ -8,8 +8,10 @@ using RecipeControl.Services.Database;
 using RecipeControl.Services.Serial;
 using RecipeControl.ViewModels;
 using RecipeControl.ViewModels.RegisterModule;
+using RecipeControl.ViewModels.ReportModule;
 using RecipeControl.Views;
 using RecipeControl.Views.RegisterModuleViews;
+using RecipeControl.Views.ReportModuleViews;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,6 +50,7 @@ namespace RecipeControl.Configuration
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();
             services.AddScoped<IInsumoRepository, InsumoRepository>();
             services.AddScoped<IRecetaVersionRepository, RecetaVersionRepository>();
+            services.AddScoped<IRegistroBatchWarehouseRepository, RegistroBatchWarehouseRepository>();
 
             // ===== HELPERS =====
             services.AddTransient<IConnectionHelper, ConnectionHelper>();
@@ -55,11 +58,12 @@ namespace RecipeControl.Configuration
             // ===== VIEWMODELS =====
             services.AddTransient<MainViewModel>();
             services.AddTransient<RegisterModuleViewModel>();
-
+            services.AddTransient<ReportModuleViewModel>();
 
             // ===== VIEWS =====
             services.AddTransient<MainWindow>();
             services.AddTransient<RegisterModuleView>();
+            services.AddTransient<ReportModuleView>();
             services.AddTransient<TestConnectionView>();
 
             return services;
