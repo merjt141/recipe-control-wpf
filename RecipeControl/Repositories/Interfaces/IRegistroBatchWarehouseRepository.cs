@@ -11,6 +11,6 @@ namespace RecipeControl.Repositories.Interfaces
 {
     public interface IRegistroBatchWarehouseRepository : IBaseRepository<RegistroBatchWarehouse>
     {
-        Task<IEnumerable<RegistroBatchDTO>> GetAllDTOsAsync();
+        Task<IEnumerable<RegistroBatchDTO>> GetAllRegistroBatchDTOAsync();
     }
 }

@@ -12,6 +12,6 @@ namespace RecipeControl.Repositories.Interfaces
     public interface IRegistroPesoRepository : IBaseRepository<RegistroPeso>
     {
         Task<List<RegistroPeso>> GetAllActiveAsync();
-        Task<List<RegisterWeightDataGridDTO>> GetAllDataGridDTO();
+        Task<List<RegisterWeightDataGridDTO>> GetAllDataGridDTOAsync();
     }
 }

@@ -45,10 +45,10 @@ namespace RecipeControl.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<RegistroBatchDTO>> GetAllDTOsAsync()
+        public async Task<IEnumerable<RegistroBatchDTO>> GetAllRegistroBatchDTOAsync()
         {
             var sql = @"SELECT * FROM vw_ObtenerRegistrosBatchWarehouse";
-            var datos = await _databaseService.ExecuteStoredProcedureAsync(sql);
+            var datos = await _databaseService.ExecuteQueryAsync(sql);
             return MapDataTableToDataGridDTOList(datos);
         }
 
@@ -81,7 +81,7 @@ namespace RecipeControl.Repositories
                     RegistroPesoCodigo = Convert.ToString(row["RegistroPesoCodigo"]) ?? string.Empty,
                     RegistroPesoValor = Convert.ToDecimal(row["RegistroPesoValor"]),
                     RegistroBatchWarehouseValorReal = Convert.ToDecimal(row["RegistroBatchWarehouseValorReal"]),
-                    RegistroBatchFechaPreparacion = Convert.ToDateTime(row["RegistroBatchFechaPreparacion"])
+                    RegistroBatchFechaPreparacion = Convert.ToDateTime(row["FechaPreparacion"])
                 });
             }
             return list;

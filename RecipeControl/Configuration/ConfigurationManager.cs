@@ -111,7 +111,11 @@ namespace RecipeControl.Configuration
                 return false;
             }
 
-            // Luego implementar Ruta Exportación
+            if (string.IsNullOrEmpty(_appSettings.Reports.ExportPath))
+            {
+                errorMessage = "No se ha configurado la ruta de exportación de reportes.";
+                return false;
+            }
 
             return true;
         }

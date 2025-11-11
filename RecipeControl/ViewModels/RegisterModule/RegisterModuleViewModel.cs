@@ -92,7 +92,7 @@ namespace RecipeControl.ViewModels.RegisterModule
 
         private async Task LoadWeightRegisters()
         {
-            var result = await _registroPesoRepository.GetAllDataGridDTO();
+            var result = await _registroPesoRepository.GetAllDataGridDTOAsync();
             RegistroPesoList = new ObservableCollection<RegisterWeightDataGridDTO>(result);
             OnPropertyChanged(nameof(RegistroPesoList));
         }

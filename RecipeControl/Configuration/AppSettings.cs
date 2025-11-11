@@ -18,6 +18,7 @@ namespace RecipeControl.Configuration
         public SerialPortSettings SerialPort { get; set; } = new();
         public ScaleEthernetPorts ScaleEthernetPorts { get; set; } = new();
         public DatabaseSettings Database {  get; set; } = new();
+        public ReportSettings Reports { get; set; } = new();
     }
 
     public class ConnectionStrings
@@ -70,5 +71,13 @@ namespace RecipeControl.Configuration
         {
             return Enum.Parse<System.IO.Ports.StopBits>(StopBits, true);
         }
+    }
+
+    public class  ReportSettings
+    {
+        public string ExportPath { get; set; } = string.Empty;
+        public string FileDateFormat { get; set; } = string.Empty;
+        public string DefaultExportFormat { get; set; } = "Excel";
+        public bool IncludeGraphs { get; set; } = true;
     }
 }

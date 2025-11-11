@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RecipeControl.Services.Interfaces
+namespace RecipeControl.Services.Reports
 {
-    public interface IReportService
+    public interface IExcelService
     {
+        bool Test(string exportPath);
     }
 }

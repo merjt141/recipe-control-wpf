@@ -5,6 +5,8 @@ using RecipeControl.Models.Config;
 using RecipeControl.Repositories;
 using RecipeControl.Repositories.Interfaces;
 using RecipeControl.Services.Database;
+using RecipeControl.Services.Interfaces;
+using RecipeControl.Services.Reports;
 using RecipeControl.Services.Serial;
 using RecipeControl.ViewModels;
 using RecipeControl.ViewModels.RegisterModule;
@@ -39,12 +41,15 @@ namespace RecipeControl.Configuration
             services.AddSingleton(config.ScaleEthernetPorts.Ports);
             services.AddSingleton(config.SerialPort);
             services.AddSingleton(config.Database);
+            services.AddSingleton(config.Reports);
 
-            // ===== INGFRAESTRUCTURE SERVICES =====
+            // ===== INFRAESTRUCTURE SERVICES =====
             services.AddSingleton<ISerialService, SerialService>();
             services.AddSingleton<IDatabaseService, DatabaseService>();
+            services.AddSingleton<IReportService, ReportService>();
+            services.AddSingleton<IExcelService, ExcelService>();
 
-            // ===== REPOSITORIOS =====
+            // ===== REPOSITORIES =====
             services.AddScoped<ITipoInsumoRepository, TipoInsumoRepository>();
             services.AddScoped<IRegistroPesoRepository, RegistroPesoRepository>();
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();

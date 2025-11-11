@@ -68,7 +68,7 @@ namespace RecipeControl.Repositories
             return MapDataTableToList(datos);
         }
 
-        public async Task<List<RegisterWeightDataGridDTO>> GetAllDataGridDTO()
+        public async Task<List<RegisterWeightDataGridDTO>> GetAllDataGridDTOAsync()
         {
             var sql = @"SELECT * FROM vw_RegistroPesoDataGrid;";
             var datos = await _databaseService.ExecuteQueryAsync(sql);

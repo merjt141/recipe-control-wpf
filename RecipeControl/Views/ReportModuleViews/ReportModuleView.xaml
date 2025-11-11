@@ -120,5 +120,12 @@
             VerticalAlignment="Top"
             Width="65"
             Command="{Binding ReadBatchsCommand}"/>
+        <Button x:Name="ReportBtn" 
+            Content="Generar" 
+            HorizontalAlignment="Left"
+            Margin="861,401,0,0" 
+            VerticalAlignment="Top"
+            Width="65"
+            Command="{Binding GenerateReportCommand}"/>
     </Grid>
 </Window>

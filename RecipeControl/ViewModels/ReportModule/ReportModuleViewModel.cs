@@ -4,6 +4,7 @@ using RecipeControl.Models.Entities;
 using RecipeControl.Repositories;
 using RecipeControl.Repositories.Interfaces;
 using RecipeControl.Services.Database;
+using RecipeControl.Services.Reports;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,17 +24,20 @@ namespace RecipeControl.ViewModels.ReportModule
         private readonly IRegistroBatchWarehouseRepository _registroBatchWarehouseRepository;
         private readonly IInsumoRepository _insumoRepository;
         private readonly IRecetaVersionRepository _recetaVersionRepository;
+        private readonly IReportService _reportService;
 
         public ReportModuleViewModel(
             IDatabaseService databaseService,
             IRegistroBatchWarehouseRepository registroBatchWarehouseRepository,
             IInsumoRepository insumoRepository,
-            IRecetaVersionRepository recetaVersionRepository)
+            IRecetaVersionRepository recetaVersionRepository,
+            IReportService reportService)
         {
             _databaseService = databaseService;
             _registroBatchWarehouseRepository = registroBatchWarehouseRepository;
             _insumoRepository = insumoRepository;
             _recetaVersionRepository = recetaVersionRepository;
+            _reportService = reportService;
 
             // Initialize commands
             ReadBatchsCommand = new AsyncRelayCommand(async _ => await ReadBatchs());
@@ -47,6 +51,28 @@ namespace RecipeControl.ViewModels.ReportModule
         {
             await LoadRecetaList();
             await LoadInsumoList();
+        }
+
+        private async Task LoadRecetaList()
+        {
+            var result = await _recetaVersionRepository.GetAllActiveAsync();
+
+            var recetaList = new List<RecetaVersionDTO>
+            {
+                new RecetaVersionDTO
+                {
+                    RecetaVersionId = 1000,
+                    RecetaId = 1000,
+                    RecetaCodigo = " - TODOS -",
+                }
+            };
+
+            recetaList.AddRange(result);
+
+            RecetaVersionList = new ObservableCollection<RecetaVersionDTO>(recetaList);
+            _selectedRecetaVersionId = RecetaVersionList.FirstOrDefault()?.RecetaVersionId ?? 1000;
+            OnPropertyChanged(nameof(RecetaVersionList));
+            OnPropertyChanged(nameof(SelectedRecetaVersionId));
         }
 
         private async Task LoadInsumoList()
@@ -69,28 +95,6 @@ namespace RecipeControl.ViewModels.ReportModule
             SelectedInsumoId = InsumoList.FirstOrDefault()?.InsumoId ?? 1000;
             OnPropertyChanged(nameof(InsumoList));
             OnPropertyChanged(nameof(SelectedInsumoId));
-        }
-
-        private async Task LoadRecetaList()
-        {
-            var result = await _recetaVersionRepository.GetAllActiveAsync();
-
-            var recetaList = new List<RecetaVersionDTO>
-            {
-                new RecetaVersionDTO
-                {
-                    RecetaVersionId = 1000,
-                    RecetaId = 1000,
-                    RecetaCodigo = " - TODOS -",
-                }
-            };
-
-            recetaList.AddRange(result);
-
-            RecetaVersionList = new ObservableCollection<RecetaVersionDTO>(result);
-            _selectedRecetaVersionId = RecetaVersionList.FirstOrDefault()?.RecetaVersionId ?? 1000;
-            OnPropertyChanged(nameof(RecetaVersionList));
-            OnPropertyChanged(nameof(SelectedRecetaVersionId));
         }
 
         #region Private Properties
@@ -166,7 +170,7 @@ namespace RecipeControl.ViewModels.ReportModule
         private async Task ReadBatchs()
         {
             // Implementation for reading batchs from the database
-            var result = await _registroBatchWarehouseRepository.GetAllDTOsAsync();
+            var result = await _registroBatchWarehouseRepository.GetAllRegistroBatchDTOAsync();
 
             // Process batchs as needed
             RegistroBatchList = new ObservableCollection<RegistroBatchDTO>(result);
@@ -176,7 +180,7 @@ namespace RecipeControl.ViewModels.ReportModule
         private async Task GenerateReport()
         {
             // Implementation for generating report
-            await Task.Delay(500); // Simulate report generation delay
+            await _reportService.GenerateReportAsync(RegistroBatchList);
         }
 
         #endregion

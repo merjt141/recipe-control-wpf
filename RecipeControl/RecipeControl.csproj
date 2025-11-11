@@ -16,7 +16,6 @@
     <Folder Include="Resources\Styles\" />
     <Folder Include="Validators\" />
     <Folder Include="Core\" />
-    <Folder Include="Services\Reports\" />
     <Folder Include="ViewModels\Base\" />
   </ItemGroup>
 
@@ -32,9 +31,19 @@
 	  
 	<!-- Dependency Injection-->
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Office.Interop.Excel" Version="16.0.18925.20022" />
     
 	<!-- Serial Communication-->  
 	<PackageReference Include="System.IO.Ports" Version="9.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Vbe.Interop">
+      <HintPath>..\..\..\..\..\..\..\Windows\assembly\GAC_MSIL\Microsoft.Vbe.Interop\15.0.0.0__71e9bce111e9429c\Microsoft.Vbe.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="office">
+      <HintPath>..\..\..\..\..\..\..\Windows\assembly\GAC_MSIL\office\15.0.0.0__71e9bce111e9429c\office.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
