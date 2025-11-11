@@ -22,18 +22,18 @@ namespace RecipeControl.ViewModels.ReportModule
         private readonly IDatabaseService _databaseService;
         private readonly IRegistroBatchWarehouseRepository _registroBatchWarehouseRepository;
         private readonly IInsumoRepository _insumoRepository;
-        private readonly IRecetaRepository _recetaRepository;
+        private readonly IRecetaVersionRepository _recetaVersionRepository;
 
         public ReportModuleViewModel(
             IDatabaseService databaseService,
             IRegistroBatchWarehouseRepository registroBatchWarehouseRepository,
             IInsumoRepository insumoRepository,
-            IRecetaRepository recetaRepository)
+            IRecetaVersionRepository recetaVersionRepository)
         {
             _databaseService = databaseService;
             _registroBatchWarehouseRepository = registroBatchWarehouseRepository;
             _insumoRepository = insumoRepository;
-            _recetaRepository = recetaRepository;
+            _recetaVersionRepository = recetaVersionRepository;
 
             // Initialize commands
             ReadBatchsCommand = new AsyncRelayCommand(async _ => await ReadBatchs());
@@ -73,44 +73,44 @@ namespace RecipeControl.ViewModels.ReportModule
 
         private async Task LoadRecetaList()
         {
-            var result = await _recetaRepository.GetAllAsync();
+            var result = await _recetaVersionRepository.GetAllActiveAsync();
 
-            var recetaList = new List<Receta>
+            var recetaList = new List<RecetaVersionDTO>
             {
-                new Receta
+                new RecetaVersionDTO
                 {
+                    RecetaVersionId = 1000,
                     RecetaId = 1000,
-                    Codigo = "- TODOS -",
-                    Descripcion = "Todas las recetas",
+                    RecetaCodigo = " - TODOS -",
                 }
             };
 
             recetaList.AddRange(result);
 
-            RecetaList = new ObservableCollection<Receta>(recetaList);
-            SelectedRecetaId = RecetaList.FirstOrDefault()?.RecetaId ?? 1000;
-            OnPropertyChanged(nameof(RecetaList));
-            OnPropertyChanged(nameof(SelectedRecetaId));
+            RecetaVersionList = new ObservableCollection<RecetaVersionDTO>(result);
+            _selectedRecetaVersionId = RecetaVersionList.FirstOrDefault()?.RecetaVersionId ?? 1000;
+            OnPropertyChanged(nameof(RecetaVersionList));
+            OnPropertyChanged(nameof(SelectedRecetaVersionId));
         }
 
         #region Private Properties
-        private int _selectedRecetaId;
+        private int _selectedRecetaVersionId;
         private int _selectedInsumoId;
         private DateTime _fechaInicial = DateTime.Now.AddDays(-7);
         private DateTime _fechaFinal = DateTime.Now;
         #endregion
 
         #region Properties
-        public ObservableCollection<Receta> RecetaList { get; set; } = new ObservableCollection<Receta>();
-        public int SelectedRecetaId
+        public ObservableCollection<RecetaVersionDTO> RecetaVersionList { get; set; } = new ObservableCollection<RecetaVersionDTO>();
+        public int SelectedRecetaVersionId
         {
-            get => _selectedRecetaId;
+            get => _selectedRecetaVersionId;
             set
             {
-                if (_selectedRecetaId != value)
+                if (_selectedRecetaVersionId != value)
                 {
-                    _selectedRecetaId = value;
-                    OnPropertyChanged(nameof(SelectedRecetaId));
+                    _selectedRecetaVersionId = value;
+                    OnPropertyChanged(nameof(SelectedRecetaVersionId));
                 }
             }
         }

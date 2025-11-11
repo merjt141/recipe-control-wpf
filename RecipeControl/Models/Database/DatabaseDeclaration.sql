@@ -752,8 +752,7 @@ JOIN Formula f ON rb.FormulaId = f.FormulaId
 JOIN RecetaVersion rv ON rb.RecetaVersionId = rv.RecetaVersionId
 JOIN Receta r ON rv.RecetaId = r.RecetaId
 JOIN Insumo i ON rb.InsumoId = i.InsumoId
-JOIN RegistroPeso rp ON rb.RegistroPesoId = rp.RegistroPesoId
-ORDER BY rb.FechaPreparacion DESC, rb.RegistroBatchWarehouseId DESC;
+JOIN RegistroPeso rp ON rb.RegistroPesoId = rp.RegistroPesoId;
 GO
 
 

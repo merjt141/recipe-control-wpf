@@ -10,66 +10,100 @@
         WindowStartupLocation="CenterScreen"
         Background="#F5F5F5">
     <Grid>
+        <Label
+               Content="REPORTE DE BATCH" 
+               HorizontalAlignment="Center" 
+               Margin="0,16,0,0" 
+               VerticalAlignment="Top" FontSize="21" FontWeight="Bold"/>
         <DataGrid x:Name="WeightRegisterDataGrid" 
             HorizontalAlignment="Left" 
             Height="173" 
             Margin="30,217,0,0" 
             VerticalAlignment="Top" 
             Width="940" 
-            ItemsSource="{Binding RegistroPesoList}"
+            ItemsSource="{Binding RegistroBatchList}"
             AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID"
                     Binding="{Binding RegistroBatchWarehouseId}"
                     Width="50"/>
-                <DataGridTextColumn Header="Código Insumo (SAP)" 
-                    Binding="{Binding InsumoCodigo}" 
-                    Width="130"/>
-                <DataGridTextColumn Header="Categoría" 
-                    Binding="{Binding TipoInsumoCodigo}" 
-                    Width="100"/>
-                <DataGridTextColumn Header="Fecha Pesado" 
-                    Binding="{Binding FechaPesado}" 
-                    Width="*"/>
-                <DataGridTextColumn Header="Valor Pesado" 
-                    Binding="{Binding Valor}" 
+                <DataGridTextColumn Header="Lote" 
+                    Binding="{Binding Lote}" 
                     Width="80"/>
-                <DataGridTextColumn Header="Usuario"
-                    Binding="{Binding UsuarioNombre}" 
+                <DataGridTextColumn Header="Formula" 
+                    Binding="{Binding FormulaCodigo}" 
                     Width="100"/>
-                <DataGridTextColumn Header="Código Único" 
-                    Binding="{Binding Codigo}" 
-                    Width="*"/>
-                <DataGridTextColumn Header="Estado" 
-                    Binding="{Binding Estado}" 
+                <DataGridTextColumn Header="Receta" 
+                    Binding="{Binding RecetaCodigo}" 
+                    Width="100"/>
+                <DataGridTextColumn Header="Usuario" 
+                    Binding="{Binding Usuario}" 
+                    Width="80"/>
+                <DataGridTextColumn Header="Insumo"
+                    Binding="{Binding InsumoCodigo}" 
+                    Width="100"/>
+                <DataGridTextColumn Header="Objetivo" 
+                    Binding="{Binding DetalleRecetaValor}" 
+                    Width="70"/>
+                <DataGridTextColumn Header="Unidad" 
+                    Binding="{Binding InsumoUnidad}" 
                     Width="50"/>
+                <DataGridTextColumn Header="Tolerancia" 
+                    Binding="{Binding DetalleRecetaVariacion}" 
+                    Width="70"/>
+                <DataGridTextColumn Header="Registros" 
+                    Binding="{Binding RegistroPesoCodigo}" 
+                    Width="150"/>
+                <DataGridTextColumn Header="Valor Real" 
+                    Binding="{Binding RegistroBatchWarehouseValorReal}" 
+                    Width="150"/>
             </DataGrid.Columns>
         </DataGrid>
+        <Label x:Name="StartDateLbl" 
+            Content="Fecha Inicial" 
+            HorizontalAlignment="Center" 
+            Margin="0,65,0,0" 
+            VerticalAlignment="Top"/>
         <DatePicker 
             x:Name="StartDatePicker"
             HorizontalAlignment="Center"
             SelectedDate="{Binding FechaInicial, Mode=TwoWay}"
             Height="24" 
-            Margin="0,90,0,0" 
+            Margin="0,101,0,0" 
             VerticalAlignment="Top" 
             Width="170"/>
+        <Label x:Name="EndDateLbl" 
+            Content="Fecha Final" 
+            HorizontalAlignment="Left" 
+            Margin="723,65,0,0" 
+            VerticalAlignment="Top"/>
         <DatePicker
             x:Name="EndDatePicker"
-            HorizontalAlignment="Center"
+            HorizontalAlignment="Left"
             SelectedDate="{Binding FechaFinal, Mode=TwoWay}"
             Height="24"
-            Margin="519,90,0,0"
+            Margin="675,101,0,0"
             VerticalAlignment="Top"
             Width="170"/>
+        <Label x:Name="RecipeLbl" 
+            Content="Filtro Receta" 
+            HorizontalAlignment="Left" 
+            Margin="84,65,0,0" 
+            VerticalAlignment="Top"/>
         <ComboBox x:Name="RecipeCmb" 
             HorizontalAlignment="Left" 
             Margin="64,102,0,0" 
             VerticalAlignment="Top" 
             Width="118"
-            ItemsSource="{Binding RecetaList}"
-            DisplayMemberPath="Codigo"
-            SelectedValuePath="RecetaId"
-            SelectedValue="{Binding SelectedRecetaId, Mode=TwoWay}"/>
+            ItemsSource="{Binding RecetaVersionList}"
+            DisplayMemberPath="RecetaCodigo"
+            SelectedValuePath="RecetaVersionId"
+            SelectedValue="{Binding SelectedRecetaVersionId, Mode=TwoWay}"/>
+        <Label x:Name="SAPCodeLbl" 
+            Content="Filtro Insumo" 
+            HorizontalAlignment="Left" 
+            Margin="245,65,0,0" 
+            VerticalAlignment="Top"/>
         <ComboBox x:Name="SAPCodeCmb" 
             HorizontalAlignment="Left" 
             Margin="226,102,0,0" 
