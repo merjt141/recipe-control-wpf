@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using Microsoft.VisualBasic;
+using System.Windows;
 
 namespace RecipeControl.Services.Database
 {
@@ -74,6 +77,8 @@ namespace RecipeControl.Services.Database
                     lastException = ex;
                     retries++;
 
+                    Debug.WriteLine($"Retry number {retries}");
+
                     if (retries >= _databaseSettings.MaxRetryCount)
                     {
                         await Task.Delay(_databaseSettings.RetryDelay);
@@ -88,32 +93,52 @@ namespace RecipeControl.Services.Database
 
         public async Task<DataTable> ExecuteQueryAsync(string sql, SqlParameter[]? parameters)
         {
-            try
+            int retries = 0;
+            Exception? lastException = null;
+
+            while (retries < _databaseSettings.MaxRetryCount)
             {
-                using var connection = GetConnection();
-                await connection.OpenAsync();
-
-                using var command = new SqlCommand(sql, connection)
+                try
                 {
-                    CommandTimeout= _databaseSettings.CommandTimeout,
-                    CommandType = CommandType.Text,
-                };
+                    using var connection = GetConnection();
+                    await connection.OpenAsync();
 
-                if (parameters != null && parameters.Length > 0)
-                {
-                    command.Parameters.AddRange(parameters);
+                    using var command = new SqlCommand(sql, connection)
+                    {
+                        CommandTimeout = _databaseSettings.CommandTimeout,
+                        CommandType = CommandType.Text,
+                    };
+
+                    if (parameters != null && parameters.Length > 0)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+
+                    using var adapter = new SqlDataAdapter(command);
+                    var dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+
+                    return dataTable;
                 }
+                catch (SqlException ex)
+                {
+                    lastException = ex;
+                    retries++;
 
-                using var adapter = new SqlDataAdapter(command);
-                var dataTable = new DataTable();
-                adapter.Fill(dataTable);
+                    Debug.WriteLine($"Retry number {retries}");
 
-                return dataTable;
+                    if (retries >= _databaseSettings.MaxRetryCount)
+                    {
+                        await Task.Delay(_databaseSettings.RetryDelay);
+                    }
+                }
             }
-            catch (SqlException ex)
-            {
-                throw new Exception($"Error al ejecutar la consulta: {ex.Message}", ex);
-            }
+
+            MessageBox.Show("Falla de conexión a base de datos");
+
+            throw new Exception(
+                $"Error al ejecutar la consulta despues de {_databaseSettings.MaxRetryCount} intentos",
+                lastException);
         }
 
         public async Task<DataTable> ExecuteStoredProcedureAsync(string nameSP, SqlParameter[] parameters)
