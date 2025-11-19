@@ -32,14 +32,21 @@ BEGIN
 	CREATE TABLE Receta (
 		RecetaId INT PRIMARY KEY IDENTITY(1001, 1),
 		Codigo VARCHAR(20) NOT NULL,
-		Descripcion VARCHAR(40),
+		Descripcion VARCHAR(40) NULL,
+		EstadoRegistro SMALLINT DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
 
-		CONSTRAINT UK_CODE UNIQUE (Codigo)
+		CONSTRAINT UK_Receta_Codigo UNIQUE (Codigo)
 	);
 END
 GO
+
+CREATE INDEX IDX_Receta_Codigo 
+	ON Receta (Codigo);
+
+CREATE INDEX IDX_Receta_FechaCreacion 
+	ON Receta (FechaCreacion);
 
 -- ====================================================================================================================================
 -- Tabla: TipoInsumo
@@ -49,12 +56,19 @@ BEGIN
 	CREATE TABLE TipoInsumo (
 		TipoInsumoId INT PRIMARY KEY IDENTITY(1001, 1),
 		Codigo VARCHAR(20) NOT NULL,
-		Descripcion VARCHAR(40),
+		Descripcion VARCHAR(40) NULL,
+		EstadoRegistro SMALLINT DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
-		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
+		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE()
 	);
 END
 GO
+
+CREATE INDEX IDX_TipoInsumo_Codigo 
+	ON TipoInsumo (Codigo);
+
+CREATE INDEX IDX_TipoInsumo_FechaCreacion 
+	ON TipoInsumo (FechaCreacion);
 
 -- ====================================================================================================================================
 -- Tabla: Balanza
@@ -64,12 +78,19 @@ BEGIN
 	CREATE TABLE Balanza (
 		BalanzaId INT PRIMARY KEY IDENTITY(1001, 1),
 		Codigo VARCHAR(20) NOT NULL,
-		Descripcion VARCHAR(40),
+		Descripcion VARCHAR(40) NULL,
+		EstadoRegistro SMALLINT DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
-		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
+		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE()
 	);
 END
 GO
+
+CREATE INDEX IDX_Balanza_Codigo 
+	ON Balanza (Codigo);
+
+CREATE INDEX IDX_Balanza_FechaCreacion
+	ON Balanza (FechaCreacion);
 
 -- ====================================================================================================================================
 -- Tabla: Usuario
@@ -88,6 +109,12 @@ BEGIN
 END
 GO
 
+CREATE INDEX IDX_Usuario_Nombre
+	ON Usuario (Nombre);
+
+CREATE INDEX IDX_Usuario_FechaCreacion
+	ON Usuario (FechaCreacion);
+
 -- ====================================================================================================================================
 -- Tabla: RecetaVersion
 -- ====================================================================================================================================
@@ -96,17 +123,23 @@ BEGIN
 	CREATE TABLE RecetaVersion (
 		RecetaVersionId INT PRIMARY KEY IDENTITY(1001, 1),
 		RecetaId INT NOT NULL,
-		VersionNum INT NOT NULL,
-		Descripcion VARCHAR(40),
+		NumeroVersion INT NOT NULL,
 		Estado SMALLINT NOT NULL DEFAULT 1,
+		EstadoRegistro SMALLINT DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
 
 		CONSTRAINT FK_RecetaId FOREIGN KEY (RecetaId) REFERENCES Receta(RecetaId),
-		CONSTRAINT UK_RecetaVersion UNIQUE (RecetaId, VersionNum)
+		CONSTRAINT UK_RecetaVersion UNIQUE (RecetaId, NumeroVersion)
 	);
 END
 GO
+
+CREATE INDEX IDX_RecetaVersion_RecetaId
+	ON RecetaVersion (RecetaId);
+
+CREATE INDEX IDX_RecetaVersion_Estado
+	ON RecetaVersion (Estado);
 
 -- ====================================================================================================================================
 -- Tabla: Formula
@@ -116,12 +149,19 @@ BEGIN
 	CREATE TABLE Formula (
 		FormulaId INT PRIMARY KEY IDENTITY(1001, 1),
 		Codigo VARCHAR(20) NOT NULL,
-		Descripcion VARCHAR(40),
+		Descripcion VARCHAR(40) NULL,
+		EstadoRegistro SMALLINT DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
-		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
+		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE()
 	);
 END
 GO
+
+CREATE INDEX IDX_Formula_Codigo
+	ON Formula (Codigo);
+
+CREATE INDEX IDX_Formula_FechaCreacion
+	ON Formula (FechaCreacion);
 
 -- ====================================================================================================================================
 -- Tabla: Insumo
@@ -131,9 +171,10 @@ BEGIN
 	CREATE TABLE Insumo (
 		InsumoId INT PRIMARY KEY IDENTITY(1001, 1),
 		Codigo VARCHAR(20) NOT NULL,
-		Descripcion VARCHAR(40),
+		Descripcion VARCHAR(40) NULL,
 		TipoInsumoId INT NOT NULL,
 		Unidad VARCHAR(5) NOT NULL DEFAULT 'kg',
+		EstadoRegistro SMALLINT DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
 
@@ -142,29 +183,45 @@ BEGIN
 END
 GO
 
+CREATE INDEX IDX_Insumo_Codigo
+	ON Insumo (Codigo);
+
+CREATE INDEX IDX_Insumo_FechaCreacion
+	ON Insumo (FechaCreacion);
+
 -- ====================================================================================================================================
--- Tabla: DetalleReceta
+-- Tabla: RecetaVersionDetalle
 -- ====================================================================================================================================
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'DetalleReceta')
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'RecetaVersionDetalle')
 BEGIN
-	CREATE TABLE DetalleReceta (
-		DetalleRecetaId INT PRIMARY KEY IDENTITY(1001, 1),
-		Codigo VARCHAR(20) NOT NULL,
-		Descripcion VARCHAR(40),
+	CREATE TABLE RecetaVersionDetalle (
+		RecetaVersionDetalleId INT PRIMARY KEY IDENTITY(1001, 1),
 		FormulaId INT NOT NULL,
 		RecetaVersionId INT NOT NULL,
 		InsumoId INT NOT NULL,
-		Valor DECIMAL(10, 4) NOT NULL,
-		Variacion DECIMAL(5, 2) NOT NULL DEFAULT 0.01,
+		CantidadRequerida DECIMAL(10, 4) NOT NULL,
+		ToleranciaMaxima DECIMAL(5, 2) NOT NULL DEFAULT 0.01,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
 
-		CONSTRAINT FK_FormulaId FOREIGN KEY (FormulaId) REFERENCES Formula(FormulaId),
-		CONSTRAINT FK_RecetaVersionId FOREIGN KEY (RecetaVersionId) REFERENCES RecetaVersion(RecetaVersionId),
-		CONSTRAINT FK_InsumoId FOREIGN KEY (InsumoId) REFERENCES Insumo(InsumoId),
+		CONSTRAINT FK_RecetaVersionDetalle_FormulaId FOREIGN KEY (FormulaId) REFERENCES Formula(FormulaId),
+		CONSTRAINT FK_RecetaVersionDetalle_RecetaVersionId FOREIGN KEY (RecetaVersionId) REFERENCES RecetaVersion(RecetaVersionId),
+		CONSTRAINT FK_RecetaVersionDetalle_InsumoId FOREIGN KEY (InsumoId) REFERENCES Insumo(InsumoId)
 	);
 END
 GO
+
+CREATE INDEX IDX_RecetaVersionDetalle_FormulaId 
+	ON RecetaVersionDetalle (FormulaId);
+
+CREATE INDEX IDX_RecetaVersionDetalle_RecetaVersionId 
+	ON RecetaVersionDetalle (RecetaVersionId);
+
+CREATE INDEX IDX_RecetaVersionDetalle_InsumoId 
+	ON RecetaVersionDetalle (InsumoId);
+
+CREATE INDEX IDX_RecetaVersionDetalle_FechaCreacion 
+	ON RecetaVersionDetalle (FechaCreacion);
 
 -- ====================================================================================================================================
 -- Tabla: RegistroPeso
@@ -174,25 +231,48 @@ BEGIN
 	CREATE TABLE RegistroPeso (
 		RegistroPesoId INT PRIMARY KEY IDENTITY(1001, 1),
 		Codigo VARCHAR(20) NOT NULL,
-		Descripcion VARCHAR(40),
 		RecetaVersionId INT NOT NULL,
 		InsumoId INT NOT NULL,
 		BalanzaId INT NOT NULL,
 		UsuarioId INT NOT NULL,
 		FechaPesado DATETIME NOT NULL DEFAULT GETDATE(),
-		Valor DECIMAL(10,4) NOT NULL,
+		CantidadPesada DECIMAL(10,4) NOT NULL,
 		Estado SMALLINT NOT NULL DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
-		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
+		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE()
 
 		CONSTRAINT UK_Codigo UNIQUE (Codigo),
 		CONSTRAINT FK_RecetaVersionWeightId FOREIGN KEY (RecetaVersionId) REFERENCES RecetaVersion(RecetaVersionId),
 		CONSTRAINT FK_InsumoRegistroPesoId FOREIGN KEY (InsumoId) REFERENCES INSUMO(InsumoId),
 		CONSTRAINT FK_BalanzaRegistroPesoId FOREIGN KEY (BalanzaId) REFERENCES Balanza(BalanzaId),
-		CONSTRAINT FK_UsuarioRegistroPesoId FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId),
+		CONSTRAINT FK_UsuarioRegistroPesoId FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId)
 	);
 END
 GO
+
+CREATE INDEX IDX_RegistroPeso_Codigo 
+	ON RegistroPeso (Codigo);
+
+CREATE INDEX IDX_RegistroPeso_RecetaVersionId 
+	ON RegistroPeso (RecetaVersionId);
+
+CREATE INDEX IDX_RegistroPeso_InsumoId 
+	ON RegistroPeso (InsumoId);
+
+CREATE INDEX IDX_RegistroPeso_BalanzaId
+	ON RegistroPeso (BalanzaId);
+
+CREATE INDEX IDX_RegistroPeso_UsuarioId
+	ON RegistroPeso (UsuarioId);
+
+CREATE INDEX IDX_RegistroPeso_FechaPesado
+	ON RegistroPeso (FechaPesado);
+
+CREATE INDEX IDX_RegistroPeso_Estado
+	ON RegistroPeso (Estado);
+
+CREATE INDEX IDX_RegistroPeso_FechaCreacion
+	ON RegistroPeso (FechaCreacion);
 
 -- ====================================================================================================================================
 -- Tabla: RegistroBatch
@@ -201,20 +281,63 @@ IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'RegistroBatch')
 BEGIN
 	CREATE TABLE RegistroBatch (
 		RegistroBatchId INT PRIMARY KEY IDENTITY(1001, 1),
-		Codigo VARCHAR(20) NOT NULL,
-		Descripcion VARCHAR(40),
-		Lote INT NOT NULL,
-		DetalleRecetaId INT NOT NULL,
-		RegistroPesoId INT NOT NULL,
-		FechaPreparacion DATETIME NOT NULL DEFAULT GETDATE(),
+		CodigoLote INT NOT NULL,
+		RecetaVersionId INT NOT NULL,
+		FechaInicio DATETIME NULL,
+		FechaFin DATETIME NULL,
+		Usuario VARCHAR(20) NOT NULL,
+		Estado SMALLINT NOT NULL DEFAULT 0,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
 
-		CONSTRAINT FK_DetalleRecetaRegistroBatchId FOREIGN KEY (DetalleRecetaId) references DetalleReceta(DetalleRecetaId),
-		CONSTRAINT FK_RegistroPesoRegistroBatchId FOREIGN KEY (RegistroPesoId) references RegistroPeso(RegistroPesoId),
+		CONSTRAINT FK_RecetaVersionId FOREIGN KEY (RecetaVersionId) REFERENCES RecetaVersion(RecetaVersionId)
 	);
 END
 GO
+
+CREATE INDEX IDX_RegistroBatch_CodigoLote
+	ON RegistroBatch (CodigoLote);
+
+CREATE INDEX IDX_RegistroBatch_RecetaVersionId
+	ON RegistroBatch (RecetaVersionId);
+
+CREATE INDEX IDX_RegistroBatch_FechaInicio
+	ON RegistroBatch (FechaInicio);
+
+CREATE INDEX IDX_RegistroBatch_FechaFin
+	ON RegistroBatch (FechaFin);
+
+CREATE INDEX IDX_RegistroBatch_FechaCreacion
+	ON RegistroBatch (FechaCreacion);
+
+-- ====================================================================================================================================
+-- Tabla: RegistroBatchDetalle
+-- ====================================================================================================================================
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'RegistroBatchDetalle')
+BEGIN
+	CREATE TABLE RegistroBatchDetalle (
+		RegistroBatchDetalleId INT PRIMARY KEY IDENTITY(1001, 1),
+		RegistroBatchId INT NOT NULL,
+		InsumoId INT NOT NULL,
+		RegistroPesoId INT NOT NULL,
+		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
+		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
+
+		CONSTRAINT FK_RegistroBatchDetalle_InsumoId FOREIGN KEY (InsumoId) references Insumo(InsumoId),
+		CONSTRAINT FK_RegistroBatchDetalle_RegistroBatchId FOREIGN KEY (RegistroBatchId) references RegistroBatch(RegistroBatchId),
+		CONSTRAINT FK_RegistroPeso_RegistroPesoId FOREIGN KEY (RegistroPesoId) references RegistroPeso(RegistroPesoId)
+	);
+END
+GO
+
+CREATE INDEX IDX_RegistroBatchDetalle_RegistroBatchId
+	ON RegistroBatchDetalle (RegistroBatchId);
+
+CREATE INDEX IDX_RegistroBatchDetalle_InsumoId
+	ON RegistroBatchDetalle (InsumoId);
+
+CREATE INDEX IDX_RegistroBatchDetalle_RegistroPesoId
+	ON RegistroBatchDetalle (RegistroPesoId);
 
 -- ====================================================================================================================================
 -- Tabla: RegistroBatchWarehouse
@@ -239,7 +362,7 @@ BEGIN
 		CONSTRAINT FK_FormulaWarehouseId FOREIGN KEY (FormulaId) references Formula(FormulaId),
 		CONSTRAINT FK_RecetaVersionWarehouseId FOREIGN KEY (RecetaVersionId) references RecetaVersion(RecetaVersionId),
 		CONSTRAINT FK_InsumoWarehouseId FOREIGN KEY (InsumoId) references Insumo(InsumoId),
-		CONSTRAINT FK_RegistroPesoWarehouseId FOREIGN KEY (RegistroPesoId) references RegistroPeso(RegistroPesoId),
+		CONSTRAINT FK_RegistroPesoWarehouseId FOREIGN KEY (RegistroPesoId) references RegistroPeso(RegistroPesoId)
 	);
 END
 GO
@@ -420,40 +543,6 @@ BEGIN
 		('DR00301','', 1001, 1003, 1016, 18.3000, 0.50);
 	PRINT('Datos de ejemplo DetalleReceta insertados')
 END
-
--- ====================================================================================================================================
--- Creación de índices de base de datos
--- ====================================================================================================================================
-
-CREATE INDEX IDX_Insumo_Codigo ON Insumo (Codigo);
-GO
-
-CREATE INDEX IDX_DetalleReceta_RecetaVersionId ON DetalleReceta (RecetaVersionId);
-GO
-
-CREATE INDEX IDX_DetalleReceta_InsumoId ON DetalleReceta (InsumoId);
-GO
-
-CREATE INDEX IDX_DetalleReceta_FormulaId ON DetalleReceta (FormulaId);
-GO
-
-CREATE INDEX IDX_RegistroPeso_Codigo ON RegistroPeso (Codigo);
-GO
-
-CREATE INDEX IDX_RegistroPeso_InsumoId ON RegistroPeso (InsumoId);
-GO
-
-CREATE INDEX IDX_RegistroPeso_Estado ON RegistroPeso (Estado);
-GO
-
-CREATE INDEX IDX_RecetaVersion_RecetaId ON RecetaVersion (RecetaId);
-GO
-
-CREATE INDEX IDX_RecetaVersion_Estado ON RecetaVersion (Estado);
-GO
-
-CREATE INDEX IDX_Usuario_Nombre ON Usuario (Nombre);
-GO
 
 -- ====================================================================================================================================
 -- Creación de procedimientos almacenados
