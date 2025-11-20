@@ -3,6 +3,7 @@ using RecipeControl.Models.DTOs;
 using RecipeControl.Models.Entities;
 using RecipeControl.Repositories.Interfaces;
 using RecipeControl.Services.Database;
+using RecipeControl.Services.Scales;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -19,6 +20,7 @@ namespace RecipeControl.ViewModels.RegisterModule
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IInsumoRepository _insumoRepository;
         private readonly IRecetaVersionRepository _recetaVersionRepository;
+        private readonly IWeighingService _weighingService;
 
         public RegisterModuleViewModel(
             IDatabaseService databaseService, 
@@ -26,7 +28,8 @@ namespace RecipeControl.ViewModels.RegisterModule
             IRegistroPesoRepository registroPesoRepository,
             IUsuarioRepository usuarioRepository,
             IInsumoRepository insumoRepository,
-            IRecetaVersionRepository recetaVersionRepository)
+            IRecetaVersionRepository recetaVersionRepository,
+            IWeighingService weighingService)
         {
             _databaseService = databaseService;
             _tipoInsumoRepository = tipoInsumoRepository;
@@ -34,6 +37,7 @@ namespace RecipeControl.ViewModels.RegisterModule
             _usuarioRepository = usuarioRepository;
             _insumoRepository = insumoRepository;
             _recetaVersionRepository = recetaVersionRepository;
+            _weighingService = weighingService;
 
             // Initialize commands
             CaptureWeightCommand = new AsyncRelayCommand(async _ => await CaptureWeight());
@@ -162,7 +166,7 @@ namespace RecipeControl.ViewModels.RegisterModule
 
         private async Task CaptureWeight()
         {
-            await Task.Delay(500); // Simulate delay for capturing weight
+            await Task.Delay(500);
             Debug.WriteLine($"Capturing weight: {RegistroPesoBalanza.Valor} kg");
         }
 

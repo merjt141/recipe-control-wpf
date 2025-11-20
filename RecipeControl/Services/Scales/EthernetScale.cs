@@ -30,12 +30,23 @@ namespace RecipeControl.Services.Scales
             throw new NotImplementedException();
         }
 
+        public Task<bool> DisconnectAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<decimal> GetCurrentWeightAsync()
         {
             var request = _scaleDataProcessingService.BuildWeightRequest();
             var response = await _scaleCommunicationService.SendAndReceiveAsync(request);
             decimal weight = _scaleDataProcessingService.ParseWeightResponse(response);
             return weight;
+        }
+
+        public async Task<string> GetInfo()
+        {
+            await Task.Delay(500);
+            return _ethernetScaleConfig.IPAddress + ":" + _ethernetScaleConfig.Port;
         }
     }
 }
