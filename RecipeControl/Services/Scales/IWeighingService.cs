@@ -8,7 +8,9 @@ namespace RecipeControl.Services.Scales
 {
     public interface IWeighingService
     {
+        Task StartService();
+        Task StopService();
         Task<string> GetScaleInfo(int scaleIndex);
-        decimal GetScaleWeight(int scaleIndex);
+        Task<decimal> GetScaleWeightAsync(int scaleIndex);
     }
 }

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace RecipeControl.Services.Scales
 {
+    /// <summary>
+    /// Weighing service to manage scales
+    /// </summary>
     public class WeighingService : IWeighingService
     {
         private readonly ScaleManagerHostedService _scaleManagerHostedService;
@@ -16,26 +19,62 @@ namespace RecipeControl.Services.Scales
             _scaleManagerHostedService = scaleManagerHostedService;
         }
 
+        /// <summary>
+        /// Start weighing service and all scales
+        /// </summary>
+        /// <returns></returns>
+        public Task StartService()
+        {
+            return _scaleManagerHostedService.StartAsync();
+        }
+
+        /// <summary>
+        /// Stop weighing service and all scales
+        /// </summary>
+        /// <returns></returns>
+        public Task StopService()
+        {
+            return _scaleManagerHostedService.StopAsync();
+        }
+
+        /// <summary>
+        /// Return information about a specific scale
+        /// </summary>
+        /// <param name="scaleIndex">Scale index from 0,1,2,...</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public Task<string> GetScaleInfo(int scaleIndex)
         {
             if (scaleIndex < 0 || scaleIndex >= _scaleManagerHostedService.Scales.Count)
             {
                 throw new ArgumentOutOfRangeException(nameof(scaleIndex), "Invalid scale index.");
             }
-            var scale = _scaleManagerHostedService.Scales[scaleIndex];
+            IScale scale = _scaleManagerHostedService.Scales[scaleIndex];
+
             return scale.GetInfo();
         }
 
-        public decimal GetScaleWeight(int scaleIndex)
+        /// <summary>
+        /// Retrieve current weight from a specific scale
+        /// </summary>
+        /// <param name="scaleIndex"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        public async Task<decimal> GetScaleWeightAsync(int scaleIndex)
         {
             if (scaleIndex < 0 || scaleIndex >= _scaleManagerHostedService.Scales.Count)
             {
                 throw new ArgumentOutOfRangeException(nameof(scaleIndex), "Invalid scale index.");
             }
-            var scale = _scaleManagerHostedService.Scales[scaleIndex];
-            var weightTask = scale.GetCurrentWeightAsync();
-            weightTask.Wait(); // Blocking wait for simplicity; consider using async/await in real implementations
-            return weightTask.Result;
+            IScale scale = _scaleManagerHostedService.Scales[scaleIndex];
+
+            if (!scale.IsOnline())
+            {
+                throw new InvalidOperationException("Scale is not online.");
+            }
+
+            return await scale.GetCurrentWeightAsync();
         }
     }
 }

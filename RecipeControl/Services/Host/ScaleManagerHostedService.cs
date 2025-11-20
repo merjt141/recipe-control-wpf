@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace RecipeControl.Services.Host
 {
+    /// <summary>
+    /// Hosted service that manages the lifecycle of scales.
+    /// </summary>
     public class ScaleManagerHostedService : IHostedService
     {
         private readonly IScaleFactory _scaleFactory;
@@ -16,18 +19,27 @@ namespace RecipeControl.Services.Host
         public ScaleManagerHostedService(IScaleFactory scaleFactory)
         {
             _scaleFactory = scaleFactory;
+
+            // Create all scales using the factory
+            Scales = _scaleFactory.CreateAll().ToList();
         }
 
+        /// <summary>
+        /// Start the hosted service by connecting to all scales.
+        /// </summary>
+        /// <returns></returns>
         public async Task StartAsync()
         {
-            Scales = _scaleFactory.CreateAll().ToList();
-
             foreach (var scale in Scales)
             {
                 await scale.ConnectAsync();
             }
         }
 
+        /// <summary>
+        /// Stop the hosted service by disconnecting from all scales.
+        /// </summary>
+        /// <returns></returns>
         public async Task StopAsync()
         {
             foreach (var scale in Scales)

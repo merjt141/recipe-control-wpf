@@ -5,8 +5,10 @@ using RecipeControl.Models.Config;
 using RecipeControl.Repositories;
 using RecipeControl.Repositories.Interfaces;
 using RecipeControl.Services.Database;
+using RecipeControl.Services.Host;
 using RecipeControl.Services.Interfaces;
 using RecipeControl.Services.Reports;
+using RecipeControl.Services.Scales;
 using RecipeControl.Services.Serial;
 using RecipeControl.ViewModels;
 using RecipeControl.ViewModels.RegisterModule;
@@ -48,6 +50,12 @@ namespace RecipeControl.Configuration
             services.AddSingleton<IDatabaseService, DatabaseService>();
             services.AddSingleton<IReportService, ReportService>();
             services.AddSingleton<IExcelService, ExcelService>();
+
+            services.AddSingleton<IWeighingService, WeighingService>();
+            services.AddSingleton<ScaleManagerHostedService>();
+            services.AddSingleton<IScaleFactory,ScaleFactory>();
+            services.AddSingleton<IScaleCommunicationService, ScaleCommunicationService>();
+            services.AddSingleton<IScaleDataProcessingService, ScaleDataProcessingService>();
 
             // ===== REPOSITORIES =====
             services.AddScoped<ITipoInsumoRepository, TipoInsumoRepository>();

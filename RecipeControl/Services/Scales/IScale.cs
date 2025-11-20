@@ -10,6 +10,7 @@ namespace RecipeControl.Services.Scales
     {
         Task<bool> ConnectAsync();
         Task<bool> DisconnectAsync();
+        bool IsOnline();
         Task<decimal> GetCurrentWeightAsync();
         Task<string> GetInfo();
     }

@@ -50,6 +50,8 @@ namespace RecipeControl.ViewModels.RegisterModule
         }
         private async Task LoadOnStartUp()
         {
+            await _weighingService.StartService();
+
             await LoadUserAsync();
             await LoadRecetaVersionList();
             await LoadTipoInsumoList();
@@ -167,6 +169,12 @@ namespace RecipeControl.ViewModels.RegisterModule
         private async Task CaptureWeight()
         {
             await Task.Delay(500);
+            int scaleIndex = 0;
+
+            string ip = await _weighingService.GetScaleInfo(scaleIndex);
+            Debug.WriteLine($"Scale Info: {ip}");
+
+            RegistroPesoBalanza.Valor = await _weighingService.GetScaleWeightAsync(scaleIndex);
             Debug.WriteLine($"Capturing weight: {RegistroPesoBalanza.Valor} kg");
         }
 

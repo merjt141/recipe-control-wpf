@@ -25,14 +25,16 @@ namespace RecipeControl.Services.Scales
             _ethernetScaleConfig = ethernetScaleConfig;
         }
 
-        public Task<bool> ConnectAsync()
+        public async Task<bool> ConnectAsync()
         {
-            throw new NotImplementedException();
+            await Task.Delay(500);
+            return true;
         }
 
-        public Task<bool> DisconnectAsync()
+        public async Task<bool> DisconnectAsync()
         {
-            throw new NotImplementedException();
+            await Task.Delay(500);
+            return true;
         }
 
         public async Task<decimal> GetCurrentWeightAsync()
