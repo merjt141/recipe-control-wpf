@@ -21,20 +21,17 @@ namespace RecipeControl.ViewModels.ReportModule
     public class ReportModuleViewModel : INotifyPropertyChanged
     {
         private readonly IDatabaseService _databaseService;
-        private readonly IRegistroBatchWarehouseRepository _registroBatchWarehouseRepository;
         private readonly IInsumoRepository _insumoRepository;
         private readonly IRecetaVersionRepository _recetaVersionRepository;
         private readonly IReportService _reportService;
 
         public ReportModuleViewModel(
             IDatabaseService databaseService,
-            IRegistroBatchWarehouseRepository registroBatchWarehouseRepository,
             IInsumoRepository insumoRepository,
             IRecetaVersionRepository recetaVersionRepository,
             IReportService reportService)
         {
             _databaseService = databaseService;
-            _registroBatchWarehouseRepository = registroBatchWarehouseRepository;
             _insumoRepository = insumoRepository;
             _recetaVersionRepository = recetaVersionRepository;
             _reportService = reportService;
@@ -170,11 +167,11 @@ namespace RecipeControl.ViewModels.ReportModule
         private async Task ReadBatchs()
         {
             // Implementation for reading batchs from the database
-            var result = await _registroBatchWarehouseRepository.GetAllRegistroBatchDTOAsync();
+            //var result = await _registroBatchWarehouseRepository.GetAllRegistroBatchDTOAsync();
 
             // Process batchs as needed
-            RegistroBatchList = new ObservableCollection<RegistroBatchDTO>(result);
-            OnPropertyChanged(nameof(RegistroBatchList));
+            //RegistroBatchList = new ObservableCollection<RegistroBatchDTO>(result);
+            //OnPropertyChanged(nameof(RegistroBatchList));
         }
 
         private async Task GenerateReport()

@@ -6,7 +6,7 @@
         xmlns:converters="clr-namespace:RecipeControl.Converters"
         mc:Ignorable="d"
         Title="Registro de Pesos de Balanza" 
-        Height="450" 
+        Height="500" 
         Width="1000"
         WindowStartupLocation="CenterScreen"
         Background="#F5F5F5">
@@ -70,7 +70,7 @@
                  HorizontalAlignment="Left" 
                  Margin="27,133,0,0" 
                  TextWrapping="Wrap" 
-                 Text="{Binding RegistroPesoBalanza.Valor}" 
+                 Text="{Binding RegistroPesoBalanza.CantidadPesada}" 
                  VerticalAlignment="Top" 
                  Width="88"/>
         <TextBox x:Name="UnicodeInput" 

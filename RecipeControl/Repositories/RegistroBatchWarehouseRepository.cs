@@ -11,33 +11,13 @@ using System.Threading.Tasks;
 
 namespace RecipeControl.Repositories
 {
-    public class RegistroBatchWarehouseRepository : IRegistroBatchWarehouseRepository
+    public class RegistroBatchWarehouseRepository
     {
         private readonly IDatabaseService _databaseService;
 
         public RegistroBatchWarehouseRepository(IDatabaseService databaseService)
         {
             _databaseService = databaseService;
-        }
-
-        public Task<RegistroBatchWarehouse> GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<RegistroBatchWarehouse>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<RegistroBatchWarehouse> InsertAsync(RegistroBatchWarehouse entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> UpdateAsync(RegistroBatchWarehouse entity)
-        {
-            throw new NotImplementedException();
         }
 
         public Task<bool> DeleteAsync(int id)

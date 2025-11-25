@@ -4,6 +4,7 @@ using RecipeControl.Helpers.Interfaces;
 using RecipeControl.Models.Config;
 using RecipeControl.Repositories;
 using RecipeControl.Repositories.Interfaces;
+using RecipeControl.Services.Credential;
 using RecipeControl.Services.Database;
 using RecipeControl.Services.Host;
 using RecipeControl.Services.Interfaces;
@@ -50,6 +51,7 @@ namespace RecipeControl.Configuration
             services.AddSingleton<IDatabaseService, DatabaseService>();
             services.AddSingleton<IReportService, ReportService>();
             services.AddSingleton<IExcelService, ExcelService>();
+            services.AddSingleton<ICredentialService, CredentialService>();
 
             services.AddSingleton<IWeighingService, WeighingService>();
             services.AddSingleton<ScaleManagerHostedService>();
@@ -63,7 +65,6 @@ namespace RecipeControl.Configuration
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();
             services.AddScoped<IInsumoRepository, InsumoRepository>();
             services.AddScoped<IRecetaVersionRepository, RecetaVersionRepository>();
-            services.AddScoped<IRegistroBatchWarehouseRepository, RegistroBatchWarehouseRepository>();
 
             // ===== HELPERS =====
             services.AddTransient<IConnectionHelper, ConnectionHelper>();

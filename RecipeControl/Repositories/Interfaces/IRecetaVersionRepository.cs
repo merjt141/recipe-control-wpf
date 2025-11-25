@@ -11,6 +11,6 @@ namespace RecipeControl.Repositories.Interfaces
 {
     public interface IRecetaVersionRepository :  IBaseRepository<RecetaVersion>
     {
-        Task<List<RecetaVersionDTO>> GetAllActiveAsync();
+        Task<IEnumerable<RecetaVersionDTO>> GetAllActiveAsync();
     }
 }

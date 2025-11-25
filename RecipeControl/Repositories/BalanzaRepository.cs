@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-using RecipeControl.Models.Entities;
+﻿using RecipeControl.Models.Entities;
 using RecipeControl.Repositories.Interfaces;
 using RecipeControl.Services.Database;
 using System;
@@ -11,35 +10,35 @@ using System.Threading.Tasks;
 
 namespace RecipeControl.Repositories
 {
-    public class TipoInsumoRepository : ITipoInsumoRepository
+    public class BalanzaRepository : IBalanzaRepository
     {
         private readonly IDatabaseService _databaseService;
 
-        public TipoInsumoRepository(IDatabaseService databaseService)
+        public BalanzaRepository(IDatabaseService databaseService)
         {
             _databaseService = databaseService;
         }
 
-        public Task<TipoInsumo> GetByIdAsync(int id)
+        public Task<Balanza> GetByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<TipoInsumo>> GetAllAsync()
+        public async Task<IEnumerable<Balanza>> GetAllAsync()
         {
-            var sql = @"SELECT * FROM TipoInsumo;";
+            var sql = @"SELECT * FROM Balanza;";
 
             var datos = await _databaseService.ExecuteQueryAsync(sql);
 
             return MapDataTableToList(datos);
         }
 
-        public Task<TipoInsumo> InsertAsync(TipoInsumo entity)
+        public Task<Balanza> InsertAsync(Balanza entity)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateAsync(TipoInsumo entity)
+        public Task<bool> UpdateAsync(Balanza entity)
         {
             throw new NotImplementedException();
         }
@@ -51,9 +50,9 @@ namespace RecipeControl.Repositories
 
         #region Data Modeling
 
-        private static IEnumerable<TipoInsumo> MapDataTableToList(DataTable data)
+        private static IEnumerable<Balanza> MapDataTableToList(DataTable data)
         {
-            var list = new List<TipoInsumo>();
+            var list = new List<Balanza>();
             foreach (DataRow row in data.Rows)
             {
                 list.Add(MapDataRowToClass(row));
@@ -62,11 +61,11 @@ namespace RecipeControl.Repositories
             return list;
         }
 
-        private static TipoInsumo MapDataRowToClass(DataRow row)
+        private static Balanza MapDataRowToClass(DataRow row)
         {
-            return new TipoInsumo()
+            return new Balanza()
             {
-                TipoInsumoId = Convert.ToInt32(row["TipoInsumoId"]),
+                BalanzaId = Convert.ToInt32(row["BalanzaId"]),
                 Codigo = row["Codigo"].ToString() ?? "",
                 Descripcion = row["Descripcion"].ToString() ?? "",
                 EstadoRegistro = Convert.ToBoolean(row["EstadoRegistro"]),

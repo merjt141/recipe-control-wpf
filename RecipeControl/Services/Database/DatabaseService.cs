@@ -91,29 +91,48 @@ namespace RecipeControl.Services.Database
                 lastException);
         }
 
+        /// <summary>
+        /// Executes the specified SQL query asynchronously and returns the result as a <see cref="DataTable"/>.
+        /// </summary>
+        /// <remarks>This method retries the query execution up to the maximum number of retries specified
+        /// in the database settings if a <see cref="SqlException"/> occurs. The retry delay and maximum retry count are
+        /// also determined by the database settings.</remarks>
+        /// <param name="sql">The SQL query to execute. This must be a valid SQL statement.</param>
+        /// <param name="parameters">An optional array of <see cref="SqlParameter"/> objects to include with the query. If <see langword="null"/>
+        /// or empty, no parameters are added.</param>
+        /// <returns>A <see cref="DataTable"/> containing the results of the query. The table will be empty if the query does not
+        /// return any rows.</returns>
+        /// <exception cref="Exception">Thrown if the query fails after the maximum number of retry attempts.</exception>
         public async Task<DataTable> ExecuteQueryAsync(string sql, SqlParameter[]? parameters)
         {
             int retries = 0;
             Exception? lastException = null;
 
+            // Retry logic
             while (retries < _databaseSettings.MaxRetryCount)
             {
                 try
                 {
+                    // Create and open connection
                     using var connection = GetConnection();
+
+                    // Open connection
                     await connection.OpenAsync();
 
+                    // Create command
                     using var command = new SqlCommand(sql, connection)
                     {
                         CommandTimeout = _databaseSettings.CommandTimeout,
                         CommandType = CommandType.Text,
                     };
 
+                    // Add parameters if provided
                     if (parameters != null && parameters.Length > 0)
                     {
                         command.Parameters.AddRange(parameters);
                     }
 
+                    // Execute query and fill DataTable
                     using var adapter = new SqlDataAdapter(command);
                     var dataTable = new DataTable();
                     adapter.Fill(dataTable);
@@ -122,11 +141,13 @@ namespace RecipeControl.Services.Database
                 }
                 catch (SqlException ex)
                 {
+                    // Log exception and increment retry count
                     lastException = ex;
                     retries++;
 
                     Debug.WriteLine($"Retry number {retries}");
 
+                    // Wait before retrying
                     if (retries >= _databaseSettings.MaxRetryCount)
                     {
                         await Task.Delay(_databaseSettings.RetryDelay);
@@ -136,6 +157,7 @@ namespace RecipeControl.Services.Database
 
             MessageBox.Show("Falla de conexión a base de datos");
 
+            // Throw exception after max retries
             throw new Exception(
                 $"Error al ejecutar la consulta despues de {_databaseSettings.MaxRetryCount} intentos",
                 lastException);

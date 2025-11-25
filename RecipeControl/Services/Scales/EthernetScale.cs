@@ -37,6 +37,11 @@ namespace RecipeControl.Services.Scales
             return true;
         }
 
+        public bool IsOnline()
+        {
+            return true;
+        }
+
         public async Task<decimal> GetCurrentWeightAsync()
         {
             var request = _scaleDataProcessingService.BuildWeightRequest();

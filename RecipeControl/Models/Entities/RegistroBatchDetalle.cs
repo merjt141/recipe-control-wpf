@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace RecipeControl.Models.Entities
 {
-    public class Receta : BaseEntity, IBaseEntity
+    public class RegistroBatchDetalle: BaseEntity, IBaseEntity
     {
-        public int RecetaId { get; set; }
-        public string Codigo { get; set; } = string.Empty;
-        public string? Descripcion { get; set; } = string.Empty;
-        public bool EstadoRegistro { get; set; }
+        public int RegistroBatchDetalleId { get; set; }
+        public int RegistroBatchId { get; set; }
+        public int InsumoId { get; set; }
+        public int RegistroPesoId { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using RecipeControl.Models.DTOs;
 using RecipeControl.Models.Entities;
 using RecipeControl.Repositories.Interfaces;
+using RecipeControl.Services.Credential;
 using RecipeControl.Services.Database;
 using RecipeControl.Services.Scales;
 using System.Collections.ObjectModel;
@@ -20,7 +21,12 @@ namespace RecipeControl.ViewModels.RegisterModule
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IInsumoRepository _insumoRepository;
         private readonly IRecetaVersionRepository _recetaVersionRepository;
+
+        // Weighing service to interact with the scale hardware
         private readonly IWeighingService _weighingService;
+
+        // Credential service to manage user authentication
+        private readonly ICredentialService _credentialService;
 
         public RegisterModuleViewModel(
             IDatabaseService databaseService, 
@@ -29,7 +35,8 @@ namespace RecipeControl.ViewModels.RegisterModule
             IUsuarioRepository usuarioRepository,
             IInsumoRepository insumoRepository,
             IRecetaVersionRepository recetaVersionRepository,
-            IWeighingService weighingService)
+            IWeighingService weighingService,
+            ICredentialService credentialService)
         {
             _databaseService = databaseService;
             _tipoInsumoRepository = tipoInsumoRepository;
@@ -38,6 +45,7 @@ namespace RecipeControl.ViewModels.RegisterModule
             _insumoRepository = insumoRepository;
             _recetaVersionRepository = recetaVersionRepository;
             _weighingService = weighingService;
+            _credentialService = credentialService;
 
             // Initialize commands
             CaptureWeightCommand = new AsyncRelayCommand(async _ => await CaptureWeight());
@@ -50,23 +58,17 @@ namespace RecipeControl.ViewModels.RegisterModule
         }
         private async Task LoadOnStartUp()
         {
+            // Simulate user login for the weighing system
+            await _credentialService.LoginAsync("Operador", "d3d9446802a44259755d38e6d163e820");
+            OnPropertyChanged(nameof(UsuarioBalanza));
+
+            // Start the weighing service
             await _weighingService.StartService();
 
-            await LoadUserAsync();
             await LoadRecetaVersionList();
             await LoadTipoInsumoList();
             await LoadInsumoList();
             await LoadWeightRegisters();
-        }
-
-        private async Task LoadUserAsync()
-        {
-            var user = await _usuarioRepository.GetByIdAsync(1002);
-            if (user != null)
-            {
-                UsuarioBalanza = user;
-                OnPropertyChanged(nameof(UsuarioBalanza));
-            }
         }
 
         private async Task LoadRecetaVersionList()
@@ -111,7 +113,14 @@ namespace RecipeControl.ViewModels.RegisterModule
 
         #region Properties
 
-        public Usuario UsuarioBalanza { get; set; } = new Usuario();
+        /// <summary>
+        /// Gets the current user associated with the balance system.
+        /// </summary>
+        public Usuario UsuarioBalanza
+        {
+            get => _credentialService.GetCurrentUser();
+        }
+
         public RegistroPeso RegistroPesoBalanza { get; set; } = new RegistroPeso();
         public ObservableCollection<TipoInsumo> TipoInsumoList { get; set; } = new ObservableCollection<TipoInsumo>();
         public int SelectedTipoInsumoId 
@@ -174,8 +183,8 @@ namespace RecipeControl.ViewModels.RegisterModule
             string ip = await _weighingService.GetScaleInfo(scaleIndex);
             Debug.WriteLine($"Scale Info: {ip}");
 
-            RegistroPesoBalanza.Valor = await _weighingService.GetScaleWeightAsync(scaleIndex);
-            Debug.WriteLine($"Capturing weight: {RegistroPesoBalanza.Valor} kg");
+            RegistroPesoBalanza.CantidadPesada = await _weighingService.GetScaleWeightAsync(scaleIndex);
+            Debug.WriteLine($"Capturing weight: {RegistroPesoBalanza.CantidadPesada} kg");
         }
 
         private async Task RegisterWeight()

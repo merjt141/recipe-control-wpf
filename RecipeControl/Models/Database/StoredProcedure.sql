@@ -90,28 +90,8 @@ END
 GO
 
 -- ====================================================================================================================================
--- Stored Procedure: sp_GetInsumosPorRecetaYTipo
+-- Stored Procedure: sp_GetRegistrosDisponiblesPorCodigo
 -- ====================================================================================================================================
-IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_GetRegistrosDisponibles')
-	DROP PROCEDURE sp_GetRegistrosDisponibles
-GO
-
-CREATE PROCEDURE sp_GetRegistrosDisponibles
-	@InsumoId			INT
-AS
-BEGIN
-	SET NOCOUNT ON;
-
-	SELECT
-		Codigo,
-		Valor
-	FROM RegistroPeso
-	WHERE InsumoId = @InsumoId
-		AND Estado = 1
-	ORDER BY FechaPesado DESC;
-END
-GO
-
 IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_GetRegistrosDisponiblesPorCodigo')
 	DROP PROCEDURE sp_GetRegistrosDisponiblesPorCodigo
 GO
@@ -124,7 +104,7 @@ BEGIN
 
 	SELECT
 		rp.Codigo AS RegistroPesoCodigo,
-		rp.Valor AS RegistroPesoValor,
+		rp.CantidadPesada AS RegistroPesoCantidadPesada,
 		i.Unidad AS InsumoUnidad
 	FROM RegistroPeso rp
 	JOIN Insumo i ON rp.InsumoId = i.InsumoId
@@ -134,25 +114,9 @@ BEGIN
 END
 GO
 
-IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_LeerDetalleReceta')
-	DROP PROCEDURE sp_LeerDetalleReceta
-GO
-CREATE PROCEDURE sp_LeerDetalleReceta
-AS
-BEGIN
-	SET NOCOUNT ON;
-	SELECT
-		r.RecetaId AS RecetaId,
-		i.InsumoId AS InsumoId,
-		dr.Valor AS Valor
-		FROM DetalleReceta dr
-		JOIN RecetaVersion rv ON dr.RecetaVersionId = rv.RecetaVersionId
-		JOIN Receta r ON rv.RecetaId = r.RecetaId
-		JOIN Insumo i ON dr.InsumoId = i.InsumoId
-		WHERE rv.Estado = 1
-END
-GO
-
+-- ====================================================================================================================================
+-- Stored Procedure: sp_LeerDetalleRecetaMinimo
+-- ====================================================================================================================================
 IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_LeerDetalleRecetaMinimo')
 	DROP PROCEDURE sp_LeerDetalleRecetaMinimo
 GO
@@ -162,15 +126,15 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	SELECT
-		dr.RecetaVersionId AS RecetaVersionId,
+		rvd.RecetaVersionId AS RecetaVersionId,
 		r.RecetaId AS RecetaId,
 		r.Codigo AS RecetaCodigo,
 		i.InsumoId AS InsumoId,
 		i.Unidad AS InsumoUnidad,
 		i.Codigo AS InsumoCodigo,
-		dr.Valor AS Valor,
-		dr.Variacion AS Variacion
-		FROM DetalleReceta dr
+		rvd.CantidadRequerida AS CantidadRequerida,
+		rvd.ToleranciaMaxima AS ToleranciaMaxima
+		FROM RecetaVersionDetalle rvd
 		JOIN RecetaVersion rv ON dr.RecetaVersionId = rv.RecetaVersionId
 		JOIN Receta r ON rv.RecetaId = r.RecetaId
 		JOIN Insumo i ON dr.InsumoId = i.InsumoId
@@ -180,10 +144,13 @@ BEGIN
 END
 GO
 
-IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_GuardarRegistroBatchWarehouse')
-	DROP PROCEDURE sp_GuardarRegistroBatchWarehouse
+-- ====================================================================================================================================
+-- Stored Procedure: sp_GuardarRegistroBatch
+-- ====================================================================================================================================
+IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'sp_GuardarRegistroBatch')
+	DROP PROCEDURE sp_GuardarRegistroBatch
 GO
-CREATE PROCEDURE sp_GuardarRegistroBatchWarehouse
+CREATE PROCEDURE sp_GuardarRegistroBatch
 	@Lote					INT,
 	@FormulaId				INT,
 	@RecetaVersionId		INT,

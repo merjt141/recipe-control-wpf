@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Tokens;
 using RecipeControl.Models.Entities;
 using RecipeControl.Repositories.Interfaces;
 using RecipeControl.Services.Database;
@@ -12,6 +13,12 @@ using System.Windows;
 
 namespace RecipeControl.Repositories
 {
+    /// <summary>
+    /// Provides methods for managing and accessing user data in the database.
+    /// </summary>
+    /// <remarks>This repository implements the <see cref="IUsuarioRepository"/> interface and provides
+    /// asynchronous methods to retrieve, insert, update, and delete user records. It relies on an <see
+    /// cref="IDatabaseService"/> to execute database queries.</remarks>
     public class UsuarioRepository : IUsuarioRepository
     {
         private readonly IDatabaseService _databaseService;
@@ -25,19 +32,17 @@ namespace RecipeControl.Repositories
         {
             var sql = @"SELECT * FROM Usuario WHERE UsuarioId = @UsuarioId;";
             var parametro = new SqlParameter("@UsuarioId", SqlDbType.Int) { Value = usuarioId };
+
             var datos = await _databaseService.ExecuteQueryAsync(sql, parametro);
+
             var lista = MapDataTableToList(datos);
+
             return lista.FirstOrDefault() ?? new Usuario();
         }
 
-        public async Task<IEnumerable<Usuario>> GetAllAsync()
+        public Task<IEnumerable<Usuario>> GetAllAsync()
         {
-            var sql = @"SELECT * FROM Usuario;";
-            var parametro = new SqlParameter();
-
-            var datos = await _databaseService.ExecuteQueryAsync(sql, parametro);
-
-            return MapDataTableToList(datos);
+            throw new NotImplementedException();
         }
 
         public Task<Usuario> InsertAsync(Usuario entity)
@@ -50,18 +55,26 @@ namespace RecipeControl.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<bool> DeleteAsync(int id)
+        public Task<bool> DeleteAsync(int usuarioId)
         {
             throw new NotImplementedException();
         }
 
-        
+        public async Task<Usuario> GetByNameAsync(string nombre)
+        {
+            var sql = @"SELECT * FROM Usuario WHERE Nombre = @Nombre;";
+            var parametro = new SqlParameter("@Nombre", SqlDbType.NVarChar) { Value = nombre };
 
-        
+            var datos = await _databaseService.ExecuteQueryAsync(sql, parametro);
+
+            var lista = MapDataTableToList(datos);
+
+            return lista.FirstOrDefault() ?? new Usuario();
+        }
 
         #region Data Modeling
 
-        private static List<Usuario> MapDataTableToList(DataTable data)
+        private static IEnumerable<Usuario> MapDataTableToList(DataTable data)
         {
             var list = new List<Usuario>();
             foreach (DataRow row in data.Rows)
@@ -79,8 +92,11 @@ namespace RecipeControl.Repositories
                 UsuarioId = Convert.ToInt32(row["UsuarioId"]),
                 Nombre = row["Nombre"].ToString() ?? "",
                 ClaveHash = row["ClaveHash"].ToString() ?? "",
+                EstadoRegistro = Convert.ToBoolean(row["EstadoRegistro"]),
                 FechaCreacion = Convert.ToDateTime(row["FechaCreacion"]),
-                FechaModificacion = Convert.ToDateTime(row["FechaModificacion"])
+                FechaModificacion = Convert.ToDateTime(row["FechaModificacion"]),
+                UsuarioCreacionId = Convert.ToInt32(row["UsuarioCreacionId"]),
+                UsuarioModificacionId = Convert.ToInt32(row["UsuarioModificacionId"])
             };
         }
 

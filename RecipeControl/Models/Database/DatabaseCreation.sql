@@ -40,8 +40,8 @@ BEGIN
 		EstadoRegistro SMALLINT DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
-		UsuarioCreacion INT NOT NULL,
-		UsuarioModificacion INT NOT NULL,
+		UsuarioCreacionId INT NOT NULL,
+		UsuarioModificacionId INT NOT NULL,
 
 		CONSTRAINT UK_Nombre UNIQUE (Nombre)
 	);
@@ -69,12 +69,12 @@ BEGIN
 		EstadoRegistro SMALLINT DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
-		UsuarioCreacion INT NOT NULL,
-		UsuarioModificacion INT NOT NULL,
+		UsuarioCreacionId INT NOT NULL,
+		UsuarioModificacionId INT NOT NULL,
 
 		CONSTRAINT UK_Receta_Codigo UNIQUE (Codigo),
-		CONSTRAINT FK_Receta_UsuarioCreacion FOREIGN KEY (UsuarioCreacion) REFERENCES Usuario(UsuarioId),
-		CONSTRAINT FK_Receta_UsuarioModificacion FOREIGN KEY (UsuarioModificacion) REFERENCES Usuario(UsuarioId)
+		CONSTRAINT FK_Receta_UsuarioCreacionId FOREIGN KEY (UsuarioCreacionId) REFERENCES Usuario(UsuarioId),
+		CONSTRAINT FK_Receta_UsuarioModificacionId FOREIGN KEY (UsuarioModificacionId) REFERENCES Usuario(UsuarioId)
 	);
 END
 GO
@@ -100,12 +100,12 @@ BEGIN
 		EstadoRegistro SMALLINT DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
-		UsuarioCreacion INT NOT NULL,
-		UsuarioModificacion INT NOT NULL,
+		UsuarioCreacionId INT NOT NULL,
+		UsuarioModificacionId INT NOT NULL,
 
 		CONSTRAINT UK_TipoInsumo_Codigo UNIQUE (Codigo),
-		CONSTRAINT FK_TipoInsumo_UsuarioCreacion FOREIGN KEY (UsuarioCreacion) REFERENCES Usuario(UsuarioId),
-		CONSTRAINT FK_TipoInsumo_UsuarioModificacion FOREIGN KEY (UsuarioModificacion) REFERENCES Usuario(UsuarioId)
+		CONSTRAINT FK_TipoInsumo_UsuarioCreacionId FOREIGN KEY (UsuarioCreacionId) REFERENCES Usuario(UsuarioId),
+		CONSTRAINT FK_TipoInsumo_UsuarioModificacionId FOREIGN KEY (UsuarioModificacionId) REFERENCES Usuario(UsuarioId)
 	);
 END
 GO
@@ -131,12 +131,12 @@ BEGIN
 		EstadoRegistro SMALLINT DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
-		UsuarioCreacion INT NOT NULL,
-		UsuarioModificacion INT NOT NULL,
+		UsuarioCreacionId INT NOT NULL,
+		UsuarioModificacionId INT NOT NULL,
 
 		CONSTRAINT UK_Balanza_Codigo UNIQUE (Codigo),
-		CONSTRAINT FK_Balanza_UsuarioCreacion FOREIGN KEY (UsuarioCreacion) REFERENCES Usuario(UsuarioId),
-		CONSTRAINT FK_Balanza_UsuarioModificacion FOREIGN KEY (UsuarioModificacion) REFERENCES Usuario(UsuarioId)
+		CONSTRAINT FK_Balanza_UsuarioCreacionId FOREIGN KEY (UsuarioCreacionId) REFERENCES Usuario(UsuarioId),
+		CONSTRAINT FK_Balanza_UsuarioModificacionId FOREIGN KEY (UsuarioModificacionId) REFERENCES Usuario(UsuarioId)
 	);
 END
 GO
@@ -162,12 +162,12 @@ BEGIN
 		EstadoRegistro SMALLINT DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
-		UsuarioCreacion INT NOT NULL,
-		UsuarioModificacion INT NOT NULL,
+		UsuarioCreacionId INT NOT NULL,
+		UsuarioModificacionId INT NOT NULL,
 
 		CONSTRAINT UK_Formula_Codigo UNIQUE (Codigo),
-		CONSTRAINT FK_Formula_UsuarioCreacion FOREIGN KEY (UsuarioCreacion) REFERENCES Usuario(UsuarioId),
-		CONSTRAINT FK_Formula_UsuarioModificacion FOREIGN KEY (UsuarioModificacion) REFERENCES Usuario(UsuarioId)
+		CONSTRAINT FK_Formula_UsuarioCreacion FOREIGN KEY (UsuarioCreacionId) REFERENCES Usuario(UsuarioId),
+		CONSTRAINT FK_Formula_UsuarioModificacion FOREIGN KEY (UsuarioModificacionId) REFERENCES Usuario(UsuarioId)
 	);
 END
 GO
@@ -195,14 +195,14 @@ BEGIN
 		EstadoRegistro SMALLINT DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
-		UsuarioCreacion INT NOT NULL,
-		UsuarioModificacion INT NOT NULL,
+		UsuarioCreacionId INT NOT NULL,
+		UsuarioModificacionId INT NOT NULL,
 
 		CONSTRAINT UK_RecetaVersion_FormulaId_RecetaId_NumeroVersion UNIQUE (FormulaId, RecetaId, NumeroVersion),
 		CONSTRAINT FK_RecetaVersion_FormulaId FOREIGN KEY (FormulaId) REFERENCES Formula(FormulaId),
 		CONSTRAINT FK_RecetaVersion_RecetaId FOREIGN KEY (RecetaId) REFERENCES Receta(RecetaId),
-		CONSTRAINT FK_RecetaVersion_UsuarioCreacion FOREIGN KEY (UsuarioCreacion) REFERENCES Usuario(UsuarioId),
-		CONSTRAINT FK_RecetaVersion_UsuarioModificacion FOREIGN KEY (UsuarioModificacion) REFERENCES Usuario(UsuarioId)
+		CONSTRAINT FK_RecetaVersion_UsuarioCreacion FOREIGN KEY (UsuarioCreacionId) REFERENCES Usuario(UsuarioId),
+		CONSTRAINT FK_RecetaVersion_UsuarioModificacion FOREIGN KEY (UsuarioModificacionId) REFERENCES Usuario(UsuarioId)
 	);
 END
 GO
@@ -236,13 +236,13 @@ BEGIN
 		EstadoRegistro SMALLINT DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
-		UsuarioCreacion INT NOT NULL,
-		UsuarioModificacion INT NOT NULL,
+		UsuarioCreacionId INT NOT NULL,
+		UsuarioModificacionId INT NOT NULL,
 
 		CONSTRAINT UK_Insumo_Codigo UNIQUE (Codigo),
 		CONSTRAINT FK_Insumo_TipoInsumoId FOREIGN KEY (TipoInsumoId) REFERENCES TipoInsumo(TipoInsumoId),
-		CONSTRAINT FK_Insumo_UsuarioCreacion FOREIGN KEY (UsuarioCreacion) REFERENCES Usuario(UsuarioId),
-		CONSTRAINT FK_Insumo_UsuarioModificacion FOREIGN KEY (UsuarioModificacion) REFERENCES Usuario(UsuarioId)
+		CONSTRAINT FK_Insumo_UsuarioCreacion FOREIGN KEY (UsuarioCreacionId) REFERENCES Usuario(UsuarioId),
+		CONSTRAINT FK_Insumo_UsuarioModificacion FOREIGN KEY (UsuarioModificacionId) REFERENCES Usuario(UsuarioId)
 	);
 END
 GO
@@ -272,20 +272,17 @@ BEGIN
 		ToleranciaMaxima DECIMAL(5, 2) NOT NULL DEFAULT 0.01,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
-		UsuarioCreacion INT NOT NULL,
-		UsuarioModificacion INT NOT NULL,
+		UsuarioCreacionId INT NOT NULL,
+		UsuarioModificacionId INT NOT NULL,
 
-		CONSTRAINT UK_RecetaVersionDetalle UNIQUE (FormulaId, RecetaVersionId, InsumoId),
+		CONSTRAINT UK_RecetaVersionDetalle UNIQUE (RecetaVersionId, InsumoId),
 		CONSTRAINT FK_RecetaVersionDetalle_RecetaVersionId FOREIGN KEY (RecetaVersionId) REFERENCES RecetaVersion(RecetaVersionId),
 		CONSTRAINT FK_RecetaVersionDetalle_InsumoId FOREIGN KEY (InsumoId) REFERENCES Insumo(InsumoId),
-		CONSTRAINT FK_RecetaVersionDetalle_UsuarioCreacion FOREIGN KEY (UsuarioCreacion) REFERENCES Usuario(UsuarioId),
-		CONSTRAINT FK_RecetaVersionDetalle_UsuarioModificacion FOREIGN KEY (UsuarioModificacion) REFERENCES Usuario(UsuarioId)
+		CONSTRAINT FK_RecetaVersionDetalle_UsuarioCreacion FOREIGN KEY (UsuarioCreacionId) REFERENCES Usuario(UsuarioId),
+		CONSTRAINT FK_RecetaVersionDetalle_UsuarioModificacion FOREIGN KEY (UsuarioModificacionId) REFERENCES Usuario(UsuarioId)
 	);
 END
 GO
-
-CREATE INDEX IDX_RecetaVersionDetalle_FormulaId 
-	ON RecetaVersionDetalle (FormulaId);
 
 CREATE INDEX IDX_RecetaVersionDetalle_RecetaVersionId 
 	ON RecetaVersionDetalle (RecetaVersionId);
@@ -314,16 +311,16 @@ BEGIN
 		EstadoRegistro SMALLINT DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
-		UsuarioCreacion INT NOT NULL,
-		UsuarioModificacion INT NOT NULL,
+		UsuarioCreacionId INT NOT NULL,
+		UsuarioModificacionId INT NOT NULL,
 
 		CONSTRAINT UK_Codigo UNIQUE (Codigo),
 		CONSTRAINT FK_RegistroPeso_RecetaVersionId FOREIGN KEY (RecetaVersionId) REFERENCES RecetaVersion(RecetaVersionId),
 		CONSTRAINT FK_RegistroPeso_InsumoId FOREIGN KEY (InsumoId) REFERENCES INSUMO(InsumoId),
 		CONSTRAINT FK_RegistroPeso_BalanzaId FOREIGN KEY (BalanzaId) REFERENCES Balanza(BalanzaId),
 		CONSTRAINT FK_RegistroPeso_UsuarioId FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId),
-		CONSTRAINT FK_RegistroPeso_UsuarioCreacion FOREIGN KEY (UsuarioCreacion) REFERENCES Usuario(UsuarioId),
-		CONSTRAINT FK_RegistroPeso_UsuarioModificacion FOREIGN KEY (UsuarioModificacion) REFERENCES Usuario(UsuarioId)
+		CONSTRAINT FK_RegistroPeso_UsuarioCreacion FOREIGN KEY (UsuarioCreacionId) REFERENCES Usuario(UsuarioId),
+		CONSTRAINT FK_RegistroPeso_UsuarioModificacion FOREIGN KEY (UsuarioModificacionId) REFERENCES Usuario(UsuarioId)
 	);
 END
 GO
@@ -366,17 +363,17 @@ BEGIN
 		RecetaVersionId INT NOT NULL,
 		FechaInicio DATETIME NULL,
 		FechaFin DATETIME NULL,
-		Usuario VARCHAR(20) NOT NULL,
+		UsuarioBatch VARCHAR(20) NOT NULL,
 		Estado SMALLINT NOT NULL DEFAULT 0,
 		EstadoRegistro SMALLINT DEFAULT 1,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
-		UsuarioCreacion INT NOT NULL,
-		UsuarioModificacion INT NOT NULL,
+		UsuarioCreacionId INT NOT NULL,
+		UsuarioModificacionId INT NOT NULL,
 
 		CONSTRAINT FK_RegistroBatch_RecetaVersionId FOREIGN KEY (RecetaVersionId) REFERENCES RecetaVersion(RecetaVersionId),
-		CONSTRAINT FK_RegistroBatch_UsuarioCreacion FOREIGN KEY (UsuarioCreacion) REFERENCES Usuario(UsuarioId),
-		CONSTRAINT FK_RegistroBatch_UsuarioModificacion FOREIGN KEY (UsuarioModificacion) REFERENCES Usuario(UsuarioId)
+		CONSTRAINT FK_RegistroBatch_UsuarioCreacion FOREIGN KEY (UsuarioCreacionId) REFERENCES Usuario(UsuarioId),
+		CONSTRAINT FK_RegistroBatch_UsuarioModificacion FOREIGN KEY (UsuarioModificacionId) REFERENCES Usuario(UsuarioId)
 	);
 END
 GO
@@ -411,14 +408,14 @@ BEGIN
 		RegistroPesoId INT NOT NULL,
 		FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 		FechaModificacion DATETIME NOT NULL DEFAULT GETDATE(),
-		UsuarioCreacion INT NOT NULL,
-		UsuarioModificacion INT NOT NULL,
+		UsuarioCreacionId INT NOT NULL,
+		UsuarioModificacionId INT NOT NULL,
 
 		CONSTRAINT FK_RegistroBatchDetalle_RegistroBatchId FOREIGN KEY (RegistroBatchId) references RegistroBatch(RegistroBatchId),
 		CONSTRAINT FK_RegistroBatchDetalle_InsumoId FOREIGN KEY (InsumoId) references Insumo(InsumoId),
 		CONSTRAINT FK_RegistroBatchDetalle_RegistroPesoId FOREIGN KEY (RegistroPesoId) references RegistroPeso(RegistroPesoId),
-		CONSTRAINT FK_RegistroBatchDetalle_UsuarioCreacion FOREIGN KEY (UsuarioCreacion) REFERENCES Usuario(UsuarioId),
-		CONSTRAINT FK_RegistroBatchDetalle_UsuarioModificacion FOREIGN KEY (UsuarioModificacion) REFERENCES Usuario(UsuarioId)
+		CONSTRAINT FK_RegistroBatchDetalle_UsuarioCreacion FOREIGN KEY (UsuarioCreacionId) REFERENCES Usuario(UsuarioId),
+		CONSTRAINT FK_RegistroBatchDetalle_UsuarioModificacion FOREIGN KEY (UsuarioModificacionId) REFERENCES Usuario(UsuarioId)
 	);
 END
 GO

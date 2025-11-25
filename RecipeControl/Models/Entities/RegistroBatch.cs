@@ -1,4 +1,5 @@
 ﻿using Microsoft.Identity.Client;
+using RecipeControl.Models.Entities.Base;
 using RecipeControl.Models.Entities.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -8,16 +9,15 @@ using System.Threading.Tasks;
 
 namespace RecipeControl.Models.Entities
 {
-    public class RegistroBatch : IBaseEntity
+    public class RegistroBatch : BaseEntity, IBaseEntity
     {
         public int RegistroBatchId { get; set; }
-        public string Codigo { get; set; } = string.Empty;
-        public string Descripcion { get; set; } = string.Empty;
-        public int Lote { get; set; }
-        public int DetalleRecetaId { get; set; }
-        public int RegistroPesoId { get; set; }
-        public DateTime FechaPreparacion { get; set; }
-        public DateTime FechaCreacion { get; set; }
-        public DateTime FechaModificacion { get; set; }
+        public string CodigoLote { get; set; } = string.Empty;
+        public int RecetaVersionId { get; set; }
+        public DateTime FechaInicio { get; set; }
+        public DateTime FechaFin { get; set; }
+        public string UsuarioBatch { get; set; } = string.Empty;
+        public int Estado { get; set; }
+        public int EstadoRegistro { get; set; }
     }
 }

@@ -8,13 +8,12 @@ using System.Threading.Tasks;
 
 namespace RecipeControl.Models.Entities
 {
-    public class RecetaVersion : BaseEntity, IBaseEntity
+    public class RecetaVersionDetalle : BaseEntity, IBaseEntity
     {
+        public int RecetaVersionDetalleId { get; set; }
         public int RecetaVersionId { get; set; }
-        public int RecetaId { get; set; }
-        public string VersionNum { get; set; } = string.Empty;
-        public string Descripcion { get; set; } = string.Empty;
-        public int Estado { get; set; }
-        public bool EstadoRegistro { get; set; }
+        public int InsumoId { get; set; }
+        public decimal CantidadRequerida { get; set; }
+        public decimal ToleranciaMaxima { get; set; }
     }
 }

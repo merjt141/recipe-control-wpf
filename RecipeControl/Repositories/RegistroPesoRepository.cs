@@ -44,7 +44,7 @@ namespace RecipeControl.Repositories
                 new SqlParameter("@BalanzaId", registroPeso.BalanzaId),
                 new SqlParameter("@UsuarioId", registroPeso.UsuarioId),
                 new SqlParameter("@FechaPesado", registroPeso.FechaPesado),
-                new SqlParameter("@Valor", registroPeso.Valor),
+                new SqlParameter("@CantidadPesada", registroPeso.CantidadPesada),
             };
             var result = await _databaseService.ExecuteStoredProcedureAsync(sql, parameters);
             registroPeso = MapDataRowToClass(result.Rows[0]);
@@ -100,7 +100,7 @@ namespace RecipeControl.Repositories
                 BalanzaId = Convert.ToInt32(row["BalanzaId"]),
                 UsuarioId = Convert.ToInt32(row["UsuarioId"]),
                 FechaPesado = Convert.ToDateTime(row["FechaPesado"]),
-                Valor = Convert.ToDecimal(row["Valor"]),
+                CantidadPesada = Convert.ToDecimal(row["CantidadPesada"]),
                 Estado = Convert.ToBoolean(row["Estado"]),
                 FechaCreacion = Convert.ToDateTime(row["FechaCreacion"]),
                 FechaModificacion = Convert.ToDateTime(row["FechaModificacion"])
