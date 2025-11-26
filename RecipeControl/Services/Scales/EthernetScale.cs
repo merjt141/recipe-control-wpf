@@ -3,56 +3,78 @@ using RecipeControl.Services.Interfaces;
 using RecipeControl.Services.Scales;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 
 namespace RecipeControl.Services.Scales
 {
+    /// <summary>
+    /// Ethernet scale implementation
+    /// </summary>
     public class EthernetScale : IScale
     {
         private readonly IScaleCommunicationService _scaleCommunicationService;
         private readonly IScaleDataProcessingService _scaleDataProcessingService;
-        private readonly EthernetScaleConfig _ethernetScaleConfig;
+        private readonly EthernetScaleConfig _ethernetScaleConfig;  
 
-        public EthernetScale(IScaleCommunicationService scaleCommunicationService,
-                     IScaleDataProcessingService scaleDataProcessingService,
+        public EthernetScale(IScaleDataProcessingService scaleDataProcessingService,
                      EthernetScaleConfig ethernetScaleConfig)
         {
-            _scaleCommunicationService = scaleCommunicationService;
             _scaleDataProcessingService = scaleDataProcessingService;
             _ethernetScaleConfig = ethernetScaleConfig;
+
+            _scaleCommunicationService = new ScaleCommunicationService(_ethernetScaleConfig);
         }
 
-        public async Task<bool> ConnectAsync()
+        /// <summary>
+        /// Connect to the scale
+        /// </summary>
+        /// <returns></returns>
+        public async Task StartAsync()
         {
-            await Task.Delay(500);
-            return true;
+            await _scaleCommunicationService.ConnectAsync();
         }
 
-        public async Task<bool> DisconnectAsync()
+        /// <summary>
+        /// Disconnect from the scale
+        /// </summary>
+        /// <returns></returns>
+        public async Task StopAsync()
         {
-            await Task.Delay(500);
-            return true;
+            await _scaleCommunicationService.DisconnectAsync();
         }
 
+        /// <summary>
+        /// Retrieve if the scale is online
+        /// </summary>
+        /// <returns></returns>
         public bool IsOnline()
         {
-            return true;
+            return _scaleCommunicationService.IsOnline();
         }
 
+        /// <summary>
+        /// Retrieve current weight from the scale
+        /// </summary>
+        /// <returns></returns>
         public async Task<decimal> GetCurrentWeightAsync()
         {
-            var request = _scaleDataProcessingService.BuildWeightRequest();
-            var response = await _scaleCommunicationService.SendAndReceiveAsync(request);
+            byte[] request = _scaleDataProcessingService.BuildWeightRequest();
+            byte[] response = await _scaleCommunicationService.SendAndReceiveAsync(request);
             decimal weight = _scaleDataProcessingService.ParseWeightResponse(response);
             return weight;
         }
 
-        public async Task<string> GetInfo()
+        /// <summary>
+        /// Return information about the scale
+        /// </summary>
+        /// <returns></returns>
+        public string GetInfo()
         {
-            await Task.Delay(500);
             return _ethernetScaleConfig.IPAddress + ":" + _ethernetScaleConfig.Port;
         }
     }

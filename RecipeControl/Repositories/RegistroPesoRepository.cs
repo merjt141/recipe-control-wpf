@@ -38,7 +38,6 @@ namespace RecipeControl.Repositories
             var sql = @"sp_InsertarNuevoRegistroPeso";
             var parameters = new SqlParameter[]
             {
-                new SqlParameter("@Descripcion", registroPeso.Descripcion),
                 new SqlParameter("@RecetaVersionId", registroPeso.RecetaVersionId),
                 new SqlParameter("@InsumoId", registroPeso.InsumoId),
                 new SqlParameter("@BalanzaId", registroPeso.BalanzaId),
@@ -68,7 +67,7 @@ namespace RecipeControl.Repositories
             return MapDataTableToList(datos);
         }
 
-        public async Task<List<RegisterWeightDataGridDTO>> GetAllDataGridDTOAsync()
+        public async Task<List<RegistroPesoDTO>> GetAllDataGridDTOAsync()
         {
             var sql = @"SELECT * FROM vw_RegistroPesoDataGrid;";
             var datos = await _databaseService.ExecuteQueryAsync(sql);
@@ -94,7 +93,6 @@ namespace RecipeControl.Repositories
             {
                 RegistroPesoId = Convert.ToInt32(row["UsuarioId"]),
                 Codigo = row["Codigo"].ToString() ?? "",
-                Descripcion = row["Descripcion"].ToString() ?? "",
                 RecetaVersionId = Convert.ToInt32(row["RecetaVersionId"]),
                 InsumoId = Convert.ToInt32(row["InsumoId"]),
                 BalanzaId = Convert.ToInt32(row["BalanzaId"]),
@@ -107,20 +105,20 @@ namespace RecipeControl.Repositories
             };
         }
 
-        private static List<RegisterWeightDataGridDTO> MapDataTableToDataGridDTOList(DataTable data)
+        private static List<RegistroPesoDTO> MapDataTableToDataGridDTOList(DataTable data)
         {
-            var list = new List<RegisterWeightDataGridDTO>();
+            var list = new List<RegistroPesoDTO>();
             foreach (DataRow row in data.Rows)
             {
-                list.Add(new RegisterWeightDataGridDTO()
+                list.Add(new RegistroPesoDTO()
                 {
                     RegistroPesoId = Convert.ToInt32(row["RegistroPesoId"]),
                     InsumoCodigo = row["InsumoCodigo"].ToString() ?? string.Empty,
                     TipoInsumoCodigo = row["TipoInsumoCodigo"].ToString() ?? string.Empty,
                     FechaPesado = Convert.ToDateTime(row["FechaPesado"]),
-                    Valor = Convert.ToDecimal(row["Valor"]),
+                    CantidadPesada = Convert.ToDecimal(row["CantidadPesada"]),
                     UsuarioNombre = row["UsuarioNombre"].ToString() ?? string.Empty,
-                    Codigo = row["Codigo"].ToString() ?? string.Empty,
+                    RegistroPesoCodigo = row["RegistroPesoCodigo"].ToString() ?? string.Empty,
                     Estado = Convert.ToInt32(row["Estado"])
                 });
             }

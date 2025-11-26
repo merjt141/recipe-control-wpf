@@ -73,7 +73,7 @@ namespace RecipeControl.Repositories
                 RecetaVersionId = Convert.ToInt32(row["RecetaVersionId"]),
                 RecetaId = Convert.ToInt32(row["RecetaId"]),
                 RecetaCodigo = row["RecetaCodigo"].ToString() ?? string.Empty,
-                VersionNum = Convert.ToInt32(row["VersionNum"]),
+                NumeroVersion = Convert.ToInt32(row["NumeroVersion"]),
                 Estado = Convert.ToInt32(row["Estado"])
             };
         }

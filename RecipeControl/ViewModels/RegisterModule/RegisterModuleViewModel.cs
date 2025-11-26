@@ -48,7 +48,7 @@ namespace RecipeControl.ViewModels.RegisterModule
             _credentialService = credentialService;
 
             // Initialize commands
-            CaptureWeightCommand = new AsyncRelayCommand(async _ => await CaptureWeight());
+            StopCaptureCommand = new AsyncRelayCommand(async _ => await StopCapture());
             RegisterWeightCommand = new AsyncRelayCommand(async _ => await RegisterWeight());
 
             // Subscribe to events
@@ -58,17 +58,34 @@ namespace RecipeControl.ViewModels.RegisterModule
         }
         private async Task LoadOnStartUp()
         {
-            // Simulate user login for the weighing system
+            // Log operator user into the system
             await _credentialService.LoginAsync("Operador", "d3d9446802a44259755d38e6d163e820");
             OnPropertyChanged(nameof(UsuarioBalanza));
 
-            // Start the weighing service
-            await _weighingService.StartService();
+            // Prepare tasks for parallel execution
+            var tasks = new List<Task>();
 
-            await LoadRecetaVersionList();
-            await LoadTipoInsumoList();
-            await LoadInsumoList();
-            await LoadWeightRegisters();
+            // Start the weighing service
+            tasks.Add(Task.Run(async () =>
+            {
+                await StartCapture();
+            }));
+
+            // Load initial data lists
+            tasks.Add(Task.Run(async () =>
+            {
+                await LoadRecetaVersionList();
+                await LoadTipoInsumoList();
+                await LoadInsumoList();
+            }));
+
+            // Load existing weight registers
+            tasks.Add(Task.Run(async () =>
+            {
+                await LoadWeightRegisters();
+            }));
+
+            await Task.WhenAll(tasks);
         }
 
         private async Task LoadRecetaVersionList()
@@ -101,7 +118,7 @@ namespace RecipeControl.ViewModels.RegisterModule
         private async Task LoadWeightRegisters()
         {
             var result = await _registroPesoRepository.GetAllDataGridDTOAsync();
-            RegistroPesoList = new ObservableCollection<RegisterWeightDataGridDTO>(result);
+            RegistroPesoList = new ObservableCollection<RegistroPesoDTO>(result);
             OnPropertyChanged(nameof(RegistroPesoList));
         }
 
@@ -109,6 +126,8 @@ namespace RecipeControl.ViewModels.RegisterModule
         private int _selectedTipoInsumoId;
         private int _selectedInsumoId;
         private int _selectedRecetaVersionId;
+
+        private CancellationTokenSource _cancellationCaptureWeight;
         #endregion
 
         #region Properties
@@ -164,33 +183,62 @@ namespace RecipeControl.ViewModels.RegisterModule
             }
         }
         public bool IsInRange { get; set; }
-        public ObservableCollection<RegisterWeightDataGridDTO> RegistroPesoList { get; set; } = new ObservableCollection<RegisterWeightDataGridDTO>();
+        public ObservableCollection<RegistroPesoDTO> RegistroPesoList { get; set; } = new ObservableCollection<RegistroPesoDTO>();
 
         #endregion
 
         #region Commands
         public ICommand CaptureWeightCommand { get; }
         public ICommand RegisterWeightCommand { get; }
+        public ICommand StopCaptureCommand { get; }
         #endregion
 
         #region Methods
 
-        private async Task CaptureWeight()
+        private async Task StartCapture()
         {
-            await Task.Delay(500);
+            _cancellationCaptureWeight = new CancellationTokenSource();
+            await _weighingService.StartService();
+            _ = CaptureWeight(_cancellationCaptureWeight);
+        }
+
+        private async Task StopCapture()
+        {
+            _cancellationCaptureWeight.Cancel();
+            await _weighingService.StopService();
+        }
+
+        private async Task CaptureWeight(CancellationTokenSource token)
+        {
             int scaleIndex = 0;
 
-            string ip = await _weighingService.GetScaleInfo(scaleIndex);
-            Debug.WriteLine($"Scale Info: {ip}");
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    string ip = _weighingService.GetScaleInfo(scaleIndex);
+                    Debug.WriteLine($"Scale Info: {ip}");
 
-            RegistroPesoBalanza.CantidadPesada = await _weighingService.GetScaleWeightAsync(scaleIndex);
-            Debug.WriteLine($"Capturing weight: {RegistroPesoBalanza.CantidadPesada} kg");
+                    RegistroPesoBalanza.CantidadPesada = await _weighingService.GetScaleWeightAsync(scaleIndex);
+                    OnPropertyChanged(nameof(RegistroPesoBalanza));
+                    Debug.WriteLine($"Capturing weight: {RegistroPesoBalanza.CantidadPesada} kg at {DateTime.Now}");
+
+                    await Task.Delay(500);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.WriteLine("Weight capture operation was canceled.");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error capturing weight: {ex.Message}");
+            }
         }
 
         private async Task RegisterWeight()
         {
-            RegistroPesoBalanza.Descripcion = "";
-            RegistroPesoBalanza.RecetaVersionId = 1002;
+            RegistroPesoBalanza.RecetaVersionId = _selectedRecetaVersionId;
             RegistroPesoBalanza.InsumoId = SelectedInsumoId;
             RegistroPesoBalanza.BalanzaId = 1001;
             RegistroPesoBalanza.UsuarioId = UsuarioBalanza.UsuarioId;

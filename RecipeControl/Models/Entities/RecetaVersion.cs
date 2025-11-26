@@ -12,7 +12,7 @@ namespace RecipeControl.Models.Entities
     {
         public int RecetaVersionId { get; set; }
         public int RecetaId { get; set; }
-        public string VersionNum { get; set; } = string.Empty;
+        public string NumeroVersion { get; set; } = string.Empty;
         public string Descripcion { get; set; } = string.Empty;
         public int Estado { get; set; }
         public bool EstadoRegistro { get; set; }

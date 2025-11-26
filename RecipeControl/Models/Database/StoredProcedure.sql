@@ -7,6 +7,9 @@
 -- Descripción: Script para la creación de procedimientos almacenados.
 -- ====================================================================================================================================
 
+USE REPRECIPE;
+GO
+
 -- ====================================================================================================================================
 -- Stored Procedure: sp_InsertarNuevoRegistroPeso
 -- ====================================================================================================================================
@@ -43,7 +46,7 @@ BEGIN
 	-- Generar el código del nuevo registro de peso
 	SET @Codigo = @CodigoInsumo + '-' + RIGHT('000000' + CAST(@NuevoId AS VARCHAR(6)), 6);
 
-	INSERT INTO RegistroPeso (Codigo, RecetaVersionId, InsumoId, BalanzaId, UsuarioId, FechaPesado, CantidadPesada, UsuarioCreacion, UsuarioModificacion)
+	INSERT INTO RegistroPeso (Codigo, RecetaVersionId, InsumoId, BalanzaId, UsuarioId, FechaPesado, CantidadPesada, UsuarioCreacionId, UsuarioModificacionId)
 	OUTPUT INSERTED.*
 	VALUES (@Codigo, @RecetaVersionId, @InsumoId, @BalanzaId, @UsuarioId, @FechaPesado, @CantidadPesada, @UsuarioId, @UsuarioId)
 END
@@ -64,7 +67,7 @@ BEGIN
 	SET NOCOUNT ON;
 
 	-- CTE para filtrar los RecetaVersionDetalle por RecetaVersionId
-	WITH RecetaVersionDetalle AS
+	WITH RecetaVersionDetalleTable AS
 	(
 		SELECT
 			RecetaVersionDetalleId,
@@ -82,7 +85,7 @@ BEGIN
 		i.Unidad AS Unidad,
 		i.FechaCreacion AS FechaCreacion,
 		i.FechaModificacion AS FechaModificacion
-	FROM RecetaVersionDetalle d
+	FROM RecetaVersionDetalleTable d
 	INNER JOIN Insumo i ON d.InsumoId = i.InsumoId
 	WHERE i.TipoInsumoId = @TipoInsumoId;
 	

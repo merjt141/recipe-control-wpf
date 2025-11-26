@@ -10,7 +10,7 @@ namespace RecipeControl.Services.Scales
     {
         Task StartService();
         Task StopService();
-        Task<string> GetScaleInfo(int scaleIndex);
+        string GetScaleInfo(int scaleIndex);
         Task<decimal> GetScaleWeightAsync(int scaleIndex);
     }
 }

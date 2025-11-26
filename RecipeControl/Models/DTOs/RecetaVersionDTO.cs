@@ -11,7 +11,7 @@ namespace RecipeControl.Models.DTOs
         public int RecetaVersionId { get; set; }
         public int RecetaId { get; set; }
         public string RecetaCodigo { get; set; } = string.Empty;
-        public int VersionNum { get; set; }
+        public int NumeroVersion { get; set; }
         public int Estado { get; set; }
     }
 }

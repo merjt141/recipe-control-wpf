@@ -2,6 +2,7 @@
 using RecipeControl.Services.Scales;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,10 +31,23 @@ namespace RecipeControl.Services.Host
         /// <returns></returns>
         public async Task StartAsync()
         {
+            var tasks = new List<Task>();
             foreach (var scale in Scales)
             {
-                await scale.ConnectAsync();
+                tasks.Add(Task.Run(async () =>
+                {
+                    try
+                    {
+                        await scale.StartAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error connecting to scale {scale.GetInfo()}: {ex.Message}");
+                    }
+                }));
             }
+
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
@@ -44,7 +58,14 @@ namespace RecipeControl.Services.Host
         {
             foreach (var scale in Scales)
             {
-                await scale.DisconnectAsync();
+                try
+                {
+                    await scale.StopAsync();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error disconnecting from scale {scale.GetInfo()}: {ex.Message}");
+                }
             }
         }
     }

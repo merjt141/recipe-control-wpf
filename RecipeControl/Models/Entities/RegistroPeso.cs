@@ -12,7 +12,6 @@ namespace RecipeControl.Models.Entities
     {
         public int RegistroPesoId { get; set; }
         public string Codigo { get; set; } = string.Empty;
-        public string? Descripcion { get; set; } = string.Empty;
         public int RecetaVersionId { get; set; }
         public int InsumoId { get; set; }
         public int BalanzaId { get; set; }

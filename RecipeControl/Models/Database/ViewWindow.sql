@@ -7,6 +7,9 @@
 -- Descripción: Script para la creación de procedimientos almacenados.
 -- ====================================================================================================================================
 
+USE REPRECIPE;
+GO
+
 -- ====================================================================================================================================
 -- View window : vw_RegistroPesoDataGrid
 -- ====================================================================================================================================
@@ -20,10 +23,10 @@ SELECT TOP 100
     rp.RegistroPesoId,
     i.Codigo AS InsumoCodigo,
     ti.Codigo AS TipoInsumoCodigo,
-    rp.FechaPesado,
-    rp.Valor,
+    rp.FechaPesado AS FechaPesado,
+    rp.CantidadPesada AS CantidadPesada,
     u.Nombre AS UsuarioNombre,
-    rp.Codigo,
+    rp.Codigo AS RegistroPesoCodigo,
     CAST(rp.Estado AS INT) AS Estado
 FROM RegistroPeso rp
 JOIN Insumo i ON rp.InsumoId = i.InsumoId
@@ -45,10 +48,10 @@ SELECT TOP 100
     rp.RegistroPesoId,
     i.Codigo AS InsumoCodigo,
     ti.Codigo AS TipoInsumoCodigo,
-    rp.FechaPesado,
-    rp.Valor,
+    rp.FechaPesado AS FechaPesado,
+    rp.CantidadPesada AS CantidadPesada,
     u.Nombre AS UsuarioNombre,
-    rp.Codigo,
+    rp.Codigo AS RegistroPesoCodigo,
     CAST(rp.Estado AS INT) AS Estado
 FROM RegistroPeso rp
 JOIN Insumo i ON rp.InsumoId = i.InsumoId
@@ -71,7 +74,7 @@ SELECT
 	rv.RecetaVersionId as RecetaVersionId,
 	rv.RecetaId as RecetaId,
 	r.Codigo as RecetaCodigo,
-	rv.VersionNum as VersionNum,
+	rv.NumeroVersion as NumeroVersion,
 	rv.Estado as Estado
 FROM RecetaVersion rv
 JOIN Receta r ON rv.RecetaId = r.RecetaId

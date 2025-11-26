@@ -11,9 +11,12 @@
 -- Tabla: Usuario
 -- ====================================================================================================================================
 
+USE REPRECIPE;
+GO
+
 IF NOT EXISTS (SELECT * FROM Usuario)
 BEGIN
-	INSERT INTO Usuario(Nombre, ClaveHash, UsuarioCreacion, UsuarioModificacion)
+	INSERT INTO Usuario(Nombre, ClaveHash, UsuarioCreacionId, UsuarioModificacionId)
 	VALUES
 		('Administrator','21232f297a57a5a743894a0e4a801fc3',1001,1001),
 		('Operador','d3d9446802a44259755d38e6d163e820',1001,1001),
@@ -27,7 +30,7 @@ END
 
 IF NOT EXISTS (SELECT * FROM Receta)
 BEGIN
-	INSERT INTO Receta(Codigo, Descripcion, UsuarioCreacion, UsuarioModificacion)
+	INSERT INTO Receta(Codigo, Descripcion, UsuarioCreacionId, UsuarioModificacionId)
 	VALUES
 		('HAMAYONEAH1','',1001,1001),
 		('HAMAYOLIGHTLAS','',1001,1001);
@@ -39,7 +42,7 @@ END
 -- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM TipoInsumo)
 BEGIN
-	INSERT INTO TipoInsumo(Codigo, Descripcion, UsuarioCreacion, UsuarioModificacion)
+	INSERT INTO TipoInsumo(Codigo, Descripcion, UsuarioCreacionId, UsuarioModificacionId)
 	VALUES
 		('LIQUIDO','',1001,1001),
 		('GRANULAR','',1001,1001);
@@ -51,7 +54,7 @@ END
 -- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM Balanza)
 BEGIN
-	INSERT INTO Balanza(Codigo, Descripcion, UsuarioCreacion, UsuarioModificacion)
+	INSERT INTO Balanza(Codigo, Descripcion, UsuarioCreacionId, UsuarioModificacionId)
 	VALUES
 		('R71MD15','Balanza de 15kg FRIMA',1001,1001),
 		('R71MD6','Balanza de 6 kg FRIMA',1001,1001);
@@ -63,7 +66,7 @@ END
 -- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM Formula)
 BEGIN
-	INSERT INTO Formula(Codigo, Descripcion, UsuarioCreacion, UsuarioModificacion)
+	INSERT INTO Formula(Codigo, Descripcion, UsuarioCreacionId, UsuarioModificacionId)
 	VALUES
 		('GENESIS','',1001,1001),
 		('FRIMA','',1001,1001);
@@ -75,7 +78,7 @@ END
 -- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM RecetaVersion)
 BEGIN
-	INSERT INTO RecetaVersion(FormulaId, RecetaId, NumeroVersion, Estado, UsuarioCreacion, UsuarioModificacion)
+	INSERT INTO RecetaVersion(FormulaId, RecetaId, NumeroVersion, Estado, UsuarioCreacionId, UsuarioModificacionId)
 	VALUES
 		(1001,1001,1,0,1001,1001),
 		(1001,1001,2,1,1001,1001),
@@ -88,7 +91,7 @@ END
 -- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM Insumo)
 BEGIN
-	INSERT INTO Insumo(Codigo, Descripcion, TipoInsumoId, Unidad, UsuarioCreacion, UsuarioModificacion)
+	INSERT INTO Insumo(Codigo, Descripcion, TipoInsumoId, Unidad, UsuarioCreacionId, UsuarioModificacionId)
 	VALUES
 		('HDAEVEG2','Medición por flujómetro', 1001, 'kg',1001,1001),		-- 1001
 		('MC31220003','', 1001, 'kg',1001,1001),							-- 1002
@@ -119,7 +122,7 @@ END
 -- ====================================================================================================================================
 IF NOT EXISTS (SELECT * FROM RecetaVersionDetalle)
 BEGIN
-	INSERT INTO RecetaVersionDetalle(RecetaVersionId, InsumoId, CantidadRequerida, ToleranciaMaxima, UsuarioCreacion, UsuarioModificacion)
+	INSERT INTO RecetaVersionDetalle(RecetaVersionId, InsumoId, CantidadRequerida, ToleranciaMaxima, UsuarioCreacionId, UsuarioModificacionId)
 	VALUES
 		(1001, 1001, 16.0000, 0.50,1001,1001),
 		(1001, 1002, 13.0000, 0.50,1001,1001),

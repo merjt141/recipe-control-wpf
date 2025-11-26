@@ -43,7 +43,7 @@ namespace RecipeControl.Services.Scales
         /// <param name="scaleIndex">Scale index from 0,1,2,...</param>
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public Task<string> GetScaleInfo(int scaleIndex)
+        public string GetScaleInfo(int scaleIndex)
         {
             if (scaleIndex < 0 || scaleIndex >= _scaleManagerHostedService.Scales.Count)
             {
@@ -63,16 +63,14 @@ namespace RecipeControl.Services.Scales
         /// <exception cref="InvalidOperationException"></exception>
         public async Task<decimal> GetScaleWeightAsync(int scaleIndex)
         {
+            // Validate scale index
             if (scaleIndex < 0 || scaleIndex >= _scaleManagerHostedService.Scales.Count)
             {
                 throw new ArgumentOutOfRangeException(nameof(scaleIndex), "Invalid scale index.");
             }
-            IScale scale = _scaleManagerHostedService.Scales[scaleIndex];
 
-            if (!scale.IsOnline())
-            {
-                throw new InvalidOperationException("Scale is not online.");
-            }
+            // Get the scale
+            IScale scale = _scaleManagerHostedService.Scales[scaleIndex];
 
             return await scale.GetCurrentWeightAsync();
         }

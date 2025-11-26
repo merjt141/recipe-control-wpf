@@ -11,7 +11,7 @@ namespace RecipeControl.Services.Protocols
 {
     public class ASCIIProtocol : IScaleDataProcessingService
     {
-        public VariantType BuildWeightRequest()
+        public byte[] BuildWeightRequest()
         {
             try
             {
@@ -20,11 +20,11 @@ namespace RecipeControl.Services.Protocols
             catch (NotImplementedException ex)
             {
                 Debug.WriteLine(ex.Message);
-                return 0;
+                return new byte[1];
             }
         }
 
-        public decimal ParseWeightResponse(VariantType response)
+        public decimal ParseWeightResponse(byte[] response)
         {
             try
             {
