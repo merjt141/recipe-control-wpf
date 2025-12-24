@@ -21,6 +21,7 @@ namespace RecipeControl.ViewModels.RegisterModule
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IInsumoRepository _insumoRepository;
         private readonly IRecetaVersionRepository _recetaVersionRepository;
+        private readonly IRecetaVersionDetalleRepository _recetaVersiondDetalleRepository;
 
         // Weighing service to interact with the scale hardware
         private readonly IWeighingService _weighingService;
@@ -36,7 +37,8 @@ namespace RecipeControl.ViewModels.RegisterModule
             IInsumoRepository insumoRepository,
             IRecetaVersionRepository recetaVersionRepository,
             IWeighingService weighingService,
-            ICredentialService credentialService)
+            ICredentialService credentialService,
+            IRecetaVersionDetalleRepository recetaVersionDetalleRepository)
         {
             _databaseService = databaseService;
             _tipoInsumoRepository = tipoInsumoRepository;
@@ -46,9 +48,10 @@ namespace RecipeControl.ViewModels.RegisterModule
             _recetaVersionRepository = recetaVersionRepository;
             _weighingService = weighingService;
             _credentialService = credentialService;
+            _recetaVersiondDetalleRepository = recetaVersionDetalleRepository;
 
             // Initialize commands
-            StopCaptureCommand = new AsyncRelayCommand(async _ => await StopCapture());
+            StopScalesCaptureCommand = new AsyncRelayCommand(async _ => await StopScalesCapture());
             RegisterWeightCommand = new AsyncRelayCommand(async _ => await RegisterWeight());
 
             // Subscribe to events
@@ -56,6 +59,11 @@ namespace RecipeControl.ViewModels.RegisterModule
             // Load initial data
             _ = LoadOnStartUp();
         }
+
+        /// <summary>
+        /// Initialize all connections and lists on loading the application
+        /// </summary>
+        /// <returns></returns>
         private async Task LoadOnStartUp()
         {
             // Log operator user into the system
@@ -63,16 +71,16 @@ namespace RecipeControl.ViewModels.RegisterModule
             OnPropertyChanged(nameof(UsuarioBalanza));
 
             // Prepare tasks for parallel execution
-            var tasks = new List<Task>();
+            List<Task> startupTasks = new List<Task>();
 
             // Start the weighing service
-            tasks.Add(Task.Run(async () =>
+            startupTasks.Add(Task.Run(async () =>
             {
-                await StartCapture();
+                await StartScalesCapture();
             }));
 
             // Load initial data lists
-            tasks.Add(Task.Run(async () =>
+            startupTasks.Add(Task.Run(async () =>
             {
                 await LoadRecetaVersionList();
                 await LoadTipoInsumoList();
@@ -80,14 +88,19 @@ namespace RecipeControl.ViewModels.RegisterModule
             }));
 
             // Load existing weight registers
-            tasks.Add(Task.Run(async () =>
+            startupTasks.Add(Task.Run(async () =>
             {
                 await LoadWeightRegisters();
             }));
 
-            await Task.WhenAll(tasks);
+            // Await all startup tasks to complete
+            await Task.WhenAll(startupTasks);
         }
 
+        /// <summary>
+        /// Load the list of active recipe versions
+        /// </summary>
+        /// <returns></returns>
         private async Task LoadRecetaVersionList()
         {
             var result = await _recetaVersionRepository.GetAllActiveAsync();
@@ -97,6 +110,10 @@ namespace RecipeControl.ViewModels.RegisterModule
             OnPropertyChanged(nameof(SelectedRecetaVersionId));
         }
 
+        /// <summary>
+        /// Load the list of input types
+        /// </summary>
+        /// <returns></returns>
         private async Task LoadTipoInsumoList()
         {
             var result = await _tipoInsumoRepository.GetAllAsync();
@@ -106,15 +123,30 @@ namespace RecipeControl.ViewModels.RegisterModule
             OnPropertyChanged(nameof(SelectedTipoInsumoId));
         }
 
+        /// <summary>
+        /// Load the list of inputs based on selected recipe version and input type
+        /// </summary>
+        /// <returns></returns>
         private async Task LoadInsumoList()
         {
-            var result = await _insumoRepository.GetInsumoByRecipeAndTypeAsync(_selectedRecetaVersionId, _selectedTipoInsumoId);
+            var result = await _insumoRepository.GetInsumoByRecetaAndTipoAsync(_selectedRecetaVersionId, _selectedTipoInsumoId);
             InsumoList = new ObservableCollection<Insumo>(result);
             SelectedInsumoId = InsumoList.FirstOrDefault()?.InsumoId ?? 1001;
             OnPropertyChanged(nameof(InsumoList));
             OnPropertyChanged(nameof(SelectedInsumoId));
         }
 
+        private async Task LoadRecipeVersionDetail()
+        {
+            var result = await _recetaVersiondDetalleRepository.GetRecetaVersionDetalleByRecetaAndInsumoAsync(_selectedRecetaVersionId, _selectedInsumoId);
+            RecetaVersionDetalleBalanza = result;
+            OnPropertyChanged(nameof(RecetaVersionDetalleBalanza));
+        }
+
+        /// <summary>
+        /// Load existing weight registers
+        /// </summary>
+        /// <returns></returns>
         private async Task LoadWeightRegisters()
         {
             var result = await _registroPesoRepository.GetAllDataGridDTOAsync();
@@ -139,6 +171,11 @@ namespace RecipeControl.ViewModels.RegisterModule
         {
             get => _credentialService.GetCurrentUser();
         }
+
+        /// <summary>
+        /// Selected recipe version detail for the balance operation.
+        /// </summary>
+        public RecetaVersionDetalle RecetaVersionDetalleBalanza { get; set; } = new RecetaVersionDetalle();
 
         public RegistroPeso RegistroPesoBalanza { get; set; } = new RegistroPeso();
         public ObservableCollection<TipoInsumo> TipoInsumoList { get; set; } = new ObservableCollection<TipoInsumo>();
@@ -188,39 +225,58 @@ namespace RecipeControl.ViewModels.RegisterModule
         #endregion
 
         #region Commands
-        public ICommand CaptureWeightCommand { get; }
+        public ICommand StopScalesCaptureCommand { get; }
         public ICommand RegisterWeightCommand { get; }
-        public ICommand StopCaptureCommand { get; }
         #endregion
 
         #region Methods
 
-        private async Task StartCapture()
+        /// <summary>
+        /// Start cyclic weight capture from the scales
+        /// </summary>
+        /// <returns></returns>
+        private async Task StartScalesCapture()
         {
             _cancellationCaptureWeight = new CancellationTokenSource();
             await _weighingService.StartService();
-            _ = CaptureWeight(_cancellationCaptureWeight);
+
+            // Async task that runs cyclically
+            _ = CaptureWeightCyclicallyAsync(_cancellationCaptureWeight);
         }
 
-        private async Task StopCapture()
+        /// <summary>
+        /// Stop cyclic weight caputure from the scales
+        /// </summary>
+        /// <returns></returns>
+        private async Task StopScalesCapture()
         {
             _cancellationCaptureWeight.Cancel();
             await _weighingService.StopService();
         }
 
-        private async Task CaptureWeight(CancellationTokenSource token)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private async Task CaptureWeightCyclicallyAsync(CancellationTokenSource token)
         {
+            // Scale index --- (just for test) ---
             int scaleIndex = 0;
 
             try
             {
                 while (!token.IsCancellationRequested)
                 {
+                    // Print scale info --- (just for test) ---
                     string ip = _weighingService.GetScaleInfo(scaleIndex);
                     Debug.WriteLine($"Scale Info: {ip}");
 
+                    // Retrieve weight value from scale
                     RegistroPesoBalanza.CantidadPesada = await _weighingService.GetScaleWeightAsync(scaleIndex);
                     OnPropertyChanged(nameof(RegistroPesoBalanza));
+
+                    // Print scale value --- (just for test) ---
                     Debug.WriteLine($"Capturing weight: {RegistroPesoBalanza.CantidadPesada} kg at {DateTime.Now}");
 
                     await Task.Delay(500);

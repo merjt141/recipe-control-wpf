@@ -100,7 +100,7 @@ namespace RecipeControl.Repositories
             return MapDataTableToList(datos);
         }
 
-        public async Task<List<Insumo>> GetInsumoByRecipeAndTypeAsync(int recetaVersionId, int tipoInsumoid)
+        public async Task<List<Insumo>> GetInsumoByRecetaAndTipoAsync(int recetaVersionId, int tipoInsumoid)
         {
             var sql = @"sp_GetInsumosPorRecetaYTipo";
             var parameters = new SqlParameter[]

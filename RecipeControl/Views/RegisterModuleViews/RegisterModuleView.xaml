@@ -18,57 +18,63 @@
     </Window.Resources>
     <Grid>
         <Button x:Name="WeighBtn" 
-                Content="Pesar" 
+                Content="Stop Balanza" 
                 HorizontalAlignment="Left"
-                Margin="40,77,0,0" 
+                Margin="878,356,0,0" 
                 VerticalAlignment="Top"
-                Width="65"
-                Command="{Binding CaptureWeightCommand}"/>
+                Width="77"
+                Command="{Binding StopScalesCaptureCommand}"/>
         <Label x:Name="TypeLbl" 
                Content="Tipo" 
                HorizontalAlignment="Left" 
-               Margin="569,100,0,0" 
+               Margin="55,405,0,0" 
                VerticalAlignment="Top"/>
         <Label x:Name="SAPCodeLbl" 
                Content="Código Insumo (SAP)" 
+               VerticalAlignment="Top"
                HorizontalAlignment="Left" 
-               Margin="695,100,0,0" 
-               VerticalAlignment="Top"/>
+               Margin="20,80,0,366"
+               VerticalContentAlignment="Center"
+               Padding="0"
+               Width="125" Height="20"/>
         <Label x:Name="WeighLbl" 
                Content="Valor Pesado" 
                HorizontalAlignment="Left" 
-               Margin="30,100,0,0" 
+               Margin="27,145,0,0" 
                VerticalAlignment="Top"/>
         <Label x:Name="UnicodeLbl" 
                Content="Código Único" 
                HorizontalAlignment="Left" 
-               Margin="177,100,0,0" 
+               Margin="174,145,0,0" 
                VerticalAlignment="Top"/>
         <Label x:Name="DatetimeLbl" 
                Content="Fecha Pesado" 
                HorizontalAlignment="Left" 
-               Margin="370,100,0,0" 
+               Margin="367,145,0,0" 
                VerticalAlignment="Top"/>
         <Label x:Name="MarginLbl" 
                Content="Margen" 
                HorizontalAlignment="Left" 
-               Margin="834,100,0,0" 
+               Margin="831,145,0,0" 
                VerticalAlignment="Top"/>
         <Label x:Name="UserLbl" 
                Content="Usuario" 
-               HorizontalAlignment="Left" 
-               Margin="769,16,0,0" 
-               VerticalAlignment="Top"/>
+              VerticalAlignment="Top"
+                HorizontalAlignment="Left" 
+                Margin="760,20,0,366"
+                VerticalContentAlignment="Center"
+                Padding="0"
+                Width="50" Height="20"/>
         <Button x:Name="WeighBtn_Copy" 
                 Content="Registrar" 
                 HorizontalAlignment="Left"
-                Margin="905,133,0,0" 
+                Margin="902,178,0,0" 
                 VerticalAlignment="Top"
                 Width="65"
                 Command="{Binding RegisterWeightCommand}"/>
         <TextBox x:Name="WeighInput" 
                  HorizontalAlignment="Left" 
-                 Margin="27,133,0,0" 
+                 Margin="24,178,0,0" 
                  TextWrapping="Wrap" 
                  Text="{Binding RegistroPesoBalanza.CantidadPesada}" 
                  VerticalAlignment="Top" 
@@ -76,7 +82,7 @@
                  IsEnabled="False"/>
         <TextBox x:Name="UnicodeInput" 
                  HorizontalAlignment="Left" 
-                 Margin="138,133,0,0" 
+                 Margin="135,178,0,0" 
                  TextWrapping="Wrap" 
                  Text="{Binding RegistroPesoBalanza.Codigo}" 
                  VerticalAlignment="Top" 
@@ -84,7 +90,7 @@
                  IsEnabled="False"/>
         <TextBox x:Name="DatetimeInput" 
                  HorizontalAlignment="Left" 
-                 Margin="325,133,0,0" 
+                 Margin="322,178,0,0" 
                  TextWrapping="Wrap" 
                  Text="{Binding RegistroPesoBalanza.FechaPesado}" 
                  VerticalAlignment="Top" 
@@ -92,7 +98,7 @@
                  IsEnabled="False"/>
         <ComboBox x:Name="TypeCmb" 
                   HorizontalAlignment="Left" 
-                  Margin="544,133,0,0" 
+                  Margin="30,438,0,0" 
                   VerticalAlignment="Top" 
                   Width="84"
                   ItemsSource="{Binding TipoInsumoList}"
@@ -101,16 +107,16 @@
                   SelectedValue="{Binding SelectedTipoInsumoId, Mode=TwoWay}"/>
         <ComboBox x:Name="SAPCodeCmb" 
                   HorizontalAlignment="Left" 
-                  Margin="695,133,0,0" 
+                  Margin="150,80,0,0" 
                   VerticalAlignment="Top" 
-                  Width="135"
+                  Width="150" Height="20"
                   ItemsSource="{Binding InsumoList}"
                   DisplayMemberPath="Codigo"
                   SelectedValuePath="InsumoId"
                   SelectedValue="{Binding SelectedInsumoId, Mode=TwoWay}"/>
         <Ellipse x:Name="MarginDisp" 
                  HorizontalAlignment="Left" 
-                 Height="21" Margin="849,133,0,0" 
+                 Height="21" Margin="846,178,0,0" 
                  Stroke="Black" 
                  VerticalAlignment="Top"
                  Width="21"/>
@@ -121,21 +127,21 @@
                VerticalAlignment="Top" FontSize="21" FontWeight="Bold"/>
         <TextBox x:Name="UserInput" 
                  HorizontalAlignment="Left" 
-                 Margin="826,22,0,0" 
+                 Margin="820,20,0,0" 
                  TextWrapping="Wrap" 
                  Text="{Binding UsuarioBalanza.Nombre}"
                  VerticalAlignment="Top" 
-                 Width="151"
+                 Width="150" Height="20"
                  IsEnabled="False"/>
         <Label
             Content="Lista de Micro-Ingredientes Pesados" 
             HorizontalAlignment="Left" 
-            Margin="27,173,0,0" 
+            Margin="27,200,0,0" 
             VerticalAlignment="Top"/>
         <DataGrid x:Name="WeightRegisterDataGrid" 
                   HorizontalAlignment="Center" 
                   Height="108" 
-                  Margin="0,204,0,0" 
+                  Margin="0,231,0,0" 
                   VerticalAlignment="Top" 
                   Width="940" 
                   ItemsSource="{Binding RegistroPesoList}"
@@ -169,18 +175,44 @@
         </DataGrid>
         <Label x:Name="RecetaLbl" 
                Content="Receta" 
-               HorizontalAlignment="Left" 
-               Margin="772,53,0,0" 
-               VerticalAlignment="Top" RenderTransformOrigin="-0.111,0.695"/>
+               VerticalAlignment="Top"
+                HorizontalAlignment="Left" 
+                Margin="20,50,0,366"
+                VerticalContentAlignment="Center"
+                Padding="0"
+                Width="125" Height="20"/>
         <ComboBox x:Name="RecetaCmb" 
             HorizontalAlignment="Left" 
-            Margin="826,55,0,0" 
+            Margin="150,50,0,0" 
             VerticalAlignment="Top" 
-            Width="151"
+            Width="150" Height="20"
             ItemsSource="{Binding RecetaVersionList}"
             DisplayMemberPath="RecetaCodigo"
             SelectedValuePath="RecetaVersionId"
             SelectedValue="{Binding SelectedRecetaVersionId, Mode=TwoWay}"/>
-
+        <Label x:Name="FormulaLbl" 
+            Content="Fórmula" 
+            VerticalAlignment="Top"
+            HorizontalAlignment="Left" 
+            Margin="20,20,0,366"
+            VerticalContentAlignment="Center"
+            Padding="0"
+            Width="125" Height="20"/>
+        <Label x:Name="PesoObjetivoLbl" 
+            Content="Cantidad Requerida" 
+            VerticalAlignment="Top"
+            HorizontalAlignment="Left" 
+            Margin="20,110,0,0"
+            VerticalContentAlignment="Center"
+            Padding="0"
+            Width="125" Height="20"/>
+        <TextBox x:Name="UserInput_Copiar" 
+            HorizontalAlignment="Left" 
+            Margin="150,110,0,0" 
+            TextWrapping="Wrap" 
+            Text="{Binding UsuarioBalanza.Nombre}"
+            VerticalAlignment="Top" 
+            Width="150" Height="20"
+            IsEnabled="False"/>
     </Grid>
 </Window>

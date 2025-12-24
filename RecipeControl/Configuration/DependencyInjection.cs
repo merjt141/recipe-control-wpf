@@ -65,6 +65,7 @@ namespace RecipeControl.Configuration
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();
             services.AddScoped<IInsumoRepository, InsumoRepository>();
             services.AddScoped<IRecetaVersionRepository, RecetaVersionRepository>();
+            services.AddScoped<IRecetaVersionDetalleRepository, RecetaVersionDetalleRepository>();
 
             // ===== HELPERS =====
             services.AddTransient<IConnectionHelper, ConnectionHelper>();

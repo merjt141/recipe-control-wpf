@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 
 namespace RecipeControl.Repositories.Interfaces
 {
-    public interface IDetalleRecetaRepository : IBaseRepository<RecetaVersionDetalle>
+    public interface IRecetaVersionDetalleRepository : IBaseRepository<RecetaVersionDetalle>
     {
+
+        Task<RecetaVersionDetalle> GetRecetaVersionDetalleByRecetaAndInsumoAsync(int recetaVersionId, int insumoId);
     }
 }
