@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RecipeControl"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Button Content="INGRESAR" HorizontalAlignment="Center" Margin="0,97,0,0" VerticalAlignment="Top" Click="Button_Click" Height="29" Width="108"/>
         <Image Margin="279,196,279,162" Source="/Image1.png" Stretch="Fill"/>

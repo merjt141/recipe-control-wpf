@@ -106,7 +106,7 @@ namespace RecipeControl.Services.Serial
             {
                 string cmd = settled ? "SP" : "IP";
                 _sp.Write(cmd + "\r\n");
-
+                LoggerService.NotifySystem("Esperando lectura de la balanza.");
                 string line = await _tcs.Task.ConfigureAwait(false);
 
                 return ParseOnlyNumber(line);

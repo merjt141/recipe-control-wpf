@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ReportMicro.Views"
         mc:Ignorable="d"
-        Title="ReportView" Height="450" Width="1000">
+        Title="ReportView" Height="450" Width="1000"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <DatePicker x:Name="FechaInicial" HorizontalAlignment="Left" Height="25" Margin="38,80,0,0" VerticalAlignment="Top" Width="166"/>
         <DatePicker x:Name="FechaFinal" HorizontalAlignment="Left" Height="25" Margin="234,80,0,0" VerticalAlignment="Top" Width="166"/>

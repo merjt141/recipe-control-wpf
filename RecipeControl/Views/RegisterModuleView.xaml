@@ -110,8 +110,8 @@
                  IsReadOnly="True"
                  Text="g"
                  Height="80" Width="48"/>
-                <Button x:Name="PesarBtn" Content="Pesar(1)" HorizontalAlignment="Left" Margin="661,272,0,0" VerticalAlignment="Top" Height="70" Width="143" FontSize="36" Click="Button_Click"/>
-                <Button x:Name="QRPrintBtn" Content="QR(2)" HorizontalAlignment="Left" Margin="672,398,0,0" VerticalAlignment="Top" Height="70" Width="119" FontSize="36" Click="Button2_Click"/>
+                <Button x:Name="PesarBtn" Content="Pesar(1)" HorizontalAlignment="Left" Margin="661,272,0,0" VerticalAlignment="Top" Height="70" Width="143" FontSize="36" Click="PesarBtn_Click" IsEnabled="False"/>
+                <Button x:Name="QRPrintBtn" Content="QR(2)" HorizontalAlignment="Left" Margin="672,398,0,0" VerticalAlignment="Top" Height="70" Width="119" FontSize="36" Click="QRPrintBtn_Click" IsEnabled="False"/>
                 <TextBox x:Name="LoteInsumoInput"
                  HorizontalAlignment="Left" VerticalAlignment="Top"
                  Margin="20,398,0,0" Padding="0,-12,0,0"
@@ -161,23 +161,23 @@
                   BorderBrush="Gray"
                   BorderThickness="1"
                   Height="550">
-            <Grid Height="498" Margin="41,0,13,0">
+            <Grid Height="498" Margin="33,0,21,0">
 
-                <Label x:Name="SAPCodeLbl" 
+                <Label x:Name="SAPCode1Lbl" 
                Content=" Insumo1" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center"
-               Margin="10,126,0,0" 
+               Margin="10,120,0,0" 
                FontSize="22"
                FontWeight="Bold"
                Height="40" Width="119"/>
 
-                <ComboBox x:Name="SAPCodeCmb"
+                <ComboBox x:Name="SAPCodeCmb1"
                   HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center"
                   Margin="134,110,0,0"
                   FontSize="48"
                   Height="80" Width="360"
                   DisplayMemberPath="Codigo"
                   SelectedValuePath="Id"
-                  SelectionChanged="SAPCodeCmb_SelectionChanged">
+                  SelectionChanged="SAPCodeCmb1_SelectionChanged">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1">
                             <GradientStop Color="#FFF0F0F0"/>
@@ -232,7 +232,7 @@
                 </ComboBox>
                 <Label x:Name="SAPCodeLbl_Copiar" 
                     Content=" Insumo4" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center"
-                    Margin="11,428,0,0" 
+                    Margin="11,418,0,0" 
                     FontSize="22"
                     FontWeight="Bold"
                     Height="40" Width="119"/>
@@ -243,7 +243,8 @@
                     Height="80" Width="360"
                     DisplayMemberPath="Codigo"
                     SelectedValuePath="Id"
-                    SelectionChanged="ProdNomCodeCmb_SelectionChanged">
+                    SelectionChanged="ProdNomCodeCmb_SelectionChanged"
+                    IsEnabled="false">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1">
                             <GradientStop Color="#FFF0F0F0"/>
@@ -259,16 +260,20 @@
                     Height="40" Width="119" RenderTransformOrigin="0.494,-1.724" Foreground="#FF062DA7"/>
                 <Label x:Name="SAPCodeLbl_Copiar2" 
                     Content=" Insumo2" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center"
-                    Margin="10,224,0,0" 
+                    Margin="10,214,0,0" 
                     FontSize="22"
                     FontWeight="Bold"
                     Height="40" Width="119"/>
                 <Label x:Name="SAPCodeLbl_Copiar3" 
                     Content=" Insumo3" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center"
-                    Margin="10,326,0,0" 
+                    Margin="10,316,0,0" 
                     FontSize="22"
                     FontWeight="Bold"
                     Height="40" Width="119"/>
+                <Label x:Name="SAPCodeValue1Lbl" Content="00.00" HorizontalAlignment="Left" Margin="22,147,0,0" VerticalAlignment="Top" Width="97" FontSize="16" Height="35"/>
+                <Label x:Name="SAPCodeValue2Lbl" Content="00.00" HorizontalAlignment="Left" Margin="22,243,0,0" VerticalAlignment="Top" Width="97" FontSize="16" Height="34"/>
+                <Label x:Name="SAPCodeValue3Lbl" Content="00.00" HorizontalAlignment="Left" Margin="22,344,0,0" VerticalAlignment="Top" Width="97" FontSize="16" Height="34"/>
+                <Label x:Name="SAPCodeValue4Lbl" Content="00.00" HorizontalAlignment="Left" Margin="22,446,0,0" VerticalAlignment="Top" Width="97" FontSize="16" Height="34"/>
 
             </Grid>
         </GroupBox>

@@ -108,7 +108,7 @@ namespace RecipeControl.Views
                     return;
                 }
 
-                // ✅ AQUÍ: actualizar la sección correcta
+                // Actualizar la sección correcta
                 root["SerialPortScale"] ??= new JsonObject();
                 root["SerialPortScale"]!["PortName"] = selectedPort;
 
@@ -116,7 +116,7 @@ namespace RecipeControl.Views
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 File.WriteAllText(filePath, root.ToJsonString(options));
 
-                // Recargar config en runtime (si tu manager lo soporta)
+                // Recargar config en runtime
                 ConfigurationManager.Instance.ReloadConfiguration();
 
                 // Refresca nuevo COM configurado
@@ -137,15 +137,27 @@ namespace RecipeControl.Views
         {
             _insumos = await DatabaseService.LoadInsumosPesoAsync();
             InsumosDataGrid.ItemsSource = _insumos;
+
+            BtnGuardarPesos.IsEnabled = _insumos.Count > 0;
         }
         private async void BtnRecargarInsumos_Click(object sender, RoutedEventArgs e)
         {
-            await CargarInsumosAsync();
+            try
+            {
+                await CargarInsumosAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar:\n{ex.Message}",
+                "Error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            }
         }
 
         private async void BtnGuardarPesos_Click(object sender, RoutedEventArgs e)
         {
-            // ✅ Confirmación antes de guardar
+            // Confirmación antes de guardar
             var confirm = MessageBox.Show(
                 "¿Deseas guardar los pesos Frima?",
                 "Confirmar guardado",
@@ -157,11 +169,11 @@ namespace RecipeControl.Views
 
             try
             {
-                // 1️⃣ Forzar commit de la celda que esté en edición
+                // 1. Forzar commit de la celda que esté en edición
                 InsumosDataGrid.CommitEdit();
                 InsumosDataGrid.CommitEdit();
 
-                // 2️⃣ Validación básica (decimal(7,4) → máximo 999.9999)
+                // 2. Validación básica (decimal(7,4) → máximo 999.9999)
                 if (_insumos.Any(x => x.PesoFrima1 < 0 || x.PesoFrima1 > 999.9999m))
                 {
                     MessageBox.Show("PesoFrima1 fuera de rango permitido (0 - 999.9999).",
@@ -171,7 +183,7 @@ namespace RecipeControl.Views
                     return;
                 }
 
-                // 3️⃣ Guardar en base de datos
+                // 3. Guardar en base de datos
                 await DatabaseService.UpdatePesoFrima1Async(_insumos);
 
                 MessageBox.Show("Pesos actualizados correctamente.",

@@ -42,7 +42,8 @@
 
         <Button x:Name="BtnGuardarPesos" Content="Guardar Pesos"
             HorizontalAlignment="Left" Margin="669,18,0,0" VerticalAlignment="Top"
-            Width="120" Click="BtnGuardarPesos_Click"/>
+            Width="120" Click="BtnGuardarPesos_Click"
+            IsEnabled="False"/>
         <Label Content="Modifica Insumos Frima" HorizontalAlignment="Left" Margin="291,14,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold"/>
         <Label Content="Modifica COM" HorizontalAlignment="Left" Margin="11,77,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold"/>
         <Border Width="2"

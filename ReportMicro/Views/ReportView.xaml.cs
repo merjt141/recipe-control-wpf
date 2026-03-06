@@ -41,6 +41,7 @@ namespace ReportMicro.Views
             FechaInicial.SelectedDate = FechaFinal.SelectedDate?.AddDays(-1);
         }
 
+        #region Eventos de UI
         private void BotonActualizar_Click_1(object sender, RoutedEventArgs e)
         {
             _ = BuildReportDataTablePreview();
@@ -52,27 +53,37 @@ namespace ReportMicro.Views
             _ = ExcelService.GenerateReportAsyc2(this.MicroReportData2);
         }
 
-        #region Database Application
-
-        private async Task BuildReportDataTablePreview()
-        {
-            if (FechaInicial.SelectedDate is null || FechaFinal is null) return;
-
-            DateTime fechaInicial = FechaInicial.SelectedDate ?? DateTime.Now;
-            DateTime fechaFinal = FechaFinal.SelectedDate ?? DateTime.Now.AddDays(-1);
-
-            var lista = await DatabaseService.BuildReportDataTable2Preview(fechaInicial, fechaFinal);
-
-            // Guardar en memoria de code-behind
-            MicroReportData2 = lista;
-            ReportDataGrid2.ItemsSource = lista.Take(10);
-        }
-
-        #endregion
-
         private void ReportDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
+
+        #endregion
+
+        #region Database Application
+
+        private async Task BuildReportDataTablePreview()
+        {
+            try
+            {
+                //if (FechaInicial.SelectedDate is null || FechaFinal is null) return;
+
+                DateTime fechaInicial = FechaInicial.SelectedDate ?? DateTime.Now;
+                DateTime fechaFinal = FechaFinal.SelectedDate ?? DateTime.Now.AddDays(-1);
+
+                var lista = await DatabaseService.BuildReportDataTable2Preview(fechaInicial, fechaFinal);
+
+                // Guardar en memoria de code-behind
+                MicroReportData2 = lista;
+                ReportDataGrid2.ItemsSource = lista.Take(10);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error actualizando la interfaz de la BD: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        #endregion
+
     }
 }

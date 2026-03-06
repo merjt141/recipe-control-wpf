@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RecipeControl"
         mc:Ignorable="d"
-        Title="MainWindow" Height="550" Width="1000">
+        Title="MainWindow" Height="550" Width="1000"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Label
             Content="REG MICROINGREDIENTES" 

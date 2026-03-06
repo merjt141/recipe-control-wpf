@@ -14,17 +14,23 @@ namespace RecipeControl.Views
 {
     public partial class RegisterModuleView : Window
     {
-
-        // TODO: Ajusta estos valores según tu tarjeta Ethernet (IP/puerto reales)
+        #region Declaracion de constantes
+        // Ajusta estos valores según tu tarjeta Ethernet (IP/puerto reales)
         private const string It1000Ip = "192.168.1.50";
         private const int It1000Port = 1234;
 
         // == Constantes de funciones ==
         private const int UTC = -5;
+        #endregion
 
+        #region Declaracon de variables
         // === Variables de interfaz ===
         private int _tipoInsumoId;
         private int _insumoId;
+        private uint _state = 0;
+        private bool isConnected;
+        private bool suppliesSelected;
+        #endregion
 
         public RegisterModuleView()
         {
@@ -33,14 +39,64 @@ namespace RecipeControl.Views
             // Inicializar elementos
             StartUpWindowsComponents();
         }
+        #region Inicialización de componentes y servicios
+        private async void StartUpWindowsComponents()
+        {
+            // Inicialización de servicio de notificaciones
+            LoggerService.OnNotification = (message) =>
+            {
+                Dispatcher.InvokeAsync(() =>
+                {
+                    LabelMsgPesaje.Text = message;
+                });
+            };
+
+            // Inicialización de combobox con base de datos
+            try
+            {
+                LoggerService.NotifySystem("Conectando con base de datos.");
+                _tipoInsumoId = 1001; // Selección fija en tipo SOLIDOS
+                
+                // Listado de insumos
+                List<ComboBoxDTO> InsumoList = await DatabaseService.GetInsumosByTipo(_tipoInsumoId);
+                SAPCodeCmb1.ItemsSource = InsumoList;
+                // Forzar selección por defecto
+                SAPCodeCmb1.SelectedIndex = 0;
+
+                List<ComboBoxDTO> InsumoList2 = await DatabaseService.GetInsumosByTipo(_tipoInsumoId);
+                SAPCodeCmb2.ItemsSource = InsumoList2;
+                // Forzar selección por defecto
+                SAPCodeCmb2.SelectedIndex = 0;
+
+                List<ComboBoxDTO> InsumoList3 = await DatabaseService.GetInsumosByTipo(_tipoInsumoId);
+                SAPCodeCmb3.ItemsSource = InsumoList3;
+                // Forzar selección por defecto
+                SAPCodeCmb3.SelectedIndex = 0;
+
+                List<ComboBoxDTO> InsumoList4 = await DatabaseService.GetInsumosByTipo(_tipoInsumoId);
+                SAPCodeCmb4.ItemsSource = InsumoList4;
+                // Forzar selección por defecto
+                SAPCodeCmb4.SelectedIndex = 0;
+
+                PesarBtn.IsEnabled = true;
+                QRPrintBtn.IsEnabled = true;
+                LoggerService.NotifySystem("Conectado.");
+                // Llenado de combo de insumos - por ahora se inician vacios.
+                //_insumoId = InsumoList.FirstOrDefault()?.Id ?? 1001;
+                //SAPCodeCmb.SelectedValue = _insumoId;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error actualizando la interfaz de la BD: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        #endregion
 
         #region Eventos de UI
-
         /// <summary>
         /// Evento de click de botón Generar QR
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private async void MacroPreImpresionBtn_Click(object sender, RoutedEventArgs e)
         {
             //// Validaciones de campos
@@ -60,11 +116,85 @@ namespace RecipeControl.Views
             //PrintEmptyNTimes(nTimes);
         }
 
+        // Boton para capturar pesado
+        private async void PesarBtn_Click(object sender, RoutedEventArgs e)
+        {
+            PesarBtn.IsEnabled = false;
+            QRPrintBtn.IsEnabled = false;
+            try
+            {
+
+                var item1 = (ComboBoxDTO)SAPCodeCmb1.SelectedItem;
+                decimal peso1 = item1.PesoFrima1;
+                var item2 = (ComboBoxDTO)SAPCodeCmb2.SelectedItem;
+                decimal peso2 = item2.PesoFrima1;
+                var item3 = (ComboBoxDTO)SAPCodeCmb3.SelectedItem;
+                decimal peso3 = item3.PesoFrima1;
+                var item4 = (ComboBoxDTO)SAPCodeCmb4.SelectedItem;
+                decimal peso4 = item4.PesoFrima1;
+
+                decimal pesoObj = Math.Round((peso1 + peso2 + peso3 + peso4) * 1000m, 1); // suma de pesos objetivo de insumos pasado a g
+                PesoObjLbl.Content = pesoObj.ToString("F1");
+            
+                // Ejecutar funciones de pesado de insumos
+                decimal net = await Ranger7000Service.RetrieveWeightAsync();
+                WeighInput.Text = net.ToString();
+                //LoggerService.NotifySystem($"PesoFrima1: {pesoObj}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error con el pesaje de la bolsa:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            PesarBtn.IsEnabled = true;
+            QRPrintBtn.IsEnabled = true;
+        }
+
+        // Une todos los datos para generar el QR todo en uno
+        private async void QRPrintBtn_Click(object sender, RoutedEventArgs e)
+        {
+            int insd1 = (SAPCodeCmb1.SelectedValue != null) ? Convert.ToInt32(SAPCodeCmb1.SelectedValue) : 1000;
+            int insd2 = (SAPCodeCmb2.SelectedValue != null) ? Convert.ToInt32(SAPCodeCmb2.SelectedValue) : 1000;
+            int insd3 = (SAPCodeCmb3.SelectedValue != null) ? Convert.ToInt32(SAPCodeCmb3.SelectedValue) : 1000;
+            int insd4 = (SAPCodeCmb4.SelectedValue != null) ? Convert.ToInt32(SAPCodeCmb4.SelectedValue) : 1000;
+
+            int lote = Convert.ToInt32(LoteInsumoInput.Text);
+
+            QRPrintBtn.IsEnabled = false;
+            try
+            {
+                // 1) Fecha pesado
+                DateTime fechaCreacion = DateTime.Now;
+
+                // 2) Insert en DB y devuelve MacroRegistroId
+                int macroRegistroId = await DatabaseService.InsertMacroAndReturnIdAsync(fechaCreacion);
+
+                // 3) Mostrar en UI
+                DatetimeInput.Text = fechaCreacion.ToString("dd/MM/yyyy HH:mm:ss");
+                decimal PesoReal = Convert.ToDecimal(WeighInput.Text);
+
+                // 4) Código único basado en el ID (recomendado)
+                UnicodeInput.Text = $"{macroRegistroId}";
+
+                decimal PesoObj = Convert.ToDecimal(PesoObjLbl.Content);
+
+                await DatabaseService.InsertOrUpdateMacroTotalAsync(macroRegistroId, "op", fechaCreacion, lote, 10, PesoReal, PesoObj, insd1, insd2, insd3, insd4);
+                //_ = ZebraDS22Client.ConfirmBeepPatternAsync();
+
+                await ImprimirCompiladoInsumos2();  //llamo al extractor de datos de la bolsa para imprimir version final 25 02 2026
+
+                LoggerService.NotifySystem("QR Cargado correctamente");
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar QR:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            QRPrintBtn.IsEnabled = true;
+        }
+
         /// <summary>
         /// Apertura de ventana de configuración de puerto serial balanza
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BotonConfig_Click(object sender, RoutedEventArgs e)
         {
             var win = new Configuracion();
@@ -73,79 +203,47 @@ namespace RecipeControl.Views
             win.ShowDialog(); // o Show() si no quieres modal
         }
 
+        #region Actualizaciones de insumos
         /// <summary>
         /// Actualización de valor de indice de combobox en backend
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SAPCodeCmb_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void SAPCodeCmb1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _insumoId = Convert.ToInt32(SAPCodeCmb.SelectedValue);
+            var item1 = (ComboBoxDTO)SAPCodeCmb1.SelectedItem;
+            decimal peso1 = item1.PesoFrima1 * 1000;
+            SAPCodeValue1Lbl.Content = $"{ peso1.ToString("F1")} g";
+        }
+        private void SAPCodeCmb2_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var item2 = (ComboBoxDTO)SAPCodeCmb2.SelectedItem;
+            decimal peso2 = item2.PesoFrima1 * 1000;
+            SAPCodeValue2Lbl.Content = $"{peso2.ToString("F1")} g";
+        }
+        private void SAPCodeCmb3_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var item3 = (ComboBoxDTO)SAPCodeCmb3.SelectedItem;
+            decimal peso3 = item3.PesoFrima1 * 1000;
+            SAPCodeValue3Lbl.Content = $"{peso3.ToString("F1")} g";
+        }
+        private void SAPCodeCmb4_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var item4 = (ComboBoxDTO)SAPCodeCmb4.SelectedItem;
+            decimal peso4 = item4.PesoFrima1 * 1000;
+            SAPCodeValue4Lbl.Content = $"{peso4.ToString("F1")} g";
+        }
+        private void ProdNomCodeCmb_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
 
         }
+        #endregion
 
         #endregion
 
-        #region Control de elementos de UI / Inicialización
-
-        private async void StartUpWindowsComponents()
-        {
-            // Inicialización de servicio de notificaciones
-            LoggerService.OnNotification = (message) =>
-            {
-                Dispatcher.InvokeAsync(() =>
-                {
-                    LabelMsgPesaje.Text = message;
-                });
-            };
-
-            // Inicialización de combobox con base de datos
-            try
-            {
-                _tipoInsumoId = 1001; // Selección fija en tipo SOLIDOS
-
-                // Listado de insumos
-                List<ComboBoxDTO> InsumoList = await DatabaseService.GetInsumosByTipo(_tipoInsumoId);
-                SAPCodeCmb.ItemsSource = InsumoList;
-                // Forzar selección por defecto
-                SAPCodeCmb.SelectedIndex = 0;
-
-                // Listado de insumos
-                List<ComboBoxDTO> InsumoList2 = await DatabaseService.GetInsumosByTipo(_tipoInsumoId);
-                SAPCodeCmb2.ItemsSource = InsumoList2;
-                // Forzar selección por defecto
-                SAPCodeCmb2.SelectedIndex = 0;
-                // Listado de insumos
-
-                List<ComboBoxDTO> InsumoList3 = await DatabaseService.GetInsumosByTipo(_tipoInsumoId);
-                SAPCodeCmb3.ItemsSource = InsumoList3;
-                // Forzar selección por defecto
-                SAPCodeCmb3.SelectedIndex = 0;
-
-                // Listado de insumos
-                List<ComboBoxDTO> InsumoList4 = await DatabaseService.GetInsumosByTipo(_tipoInsumoId);
-                SAPCodeCmb4.ItemsSource = InsumoList4;
-                // Forzar selección por defecto
-                SAPCodeCmb4.SelectedIndex = 0;
-
-                // Llenado de combo de insumos - por ahora se inician vacios.
-                //_insumoId = InsumoList.FirstOrDefault()?.Id ?? 1001;
-                //SAPCodeCmb.SelectedValue = _insumoId;
-
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show($"Error actualizando la interfaz de la BD: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
-        }
-
+        #region Funciones
         /// <summary>
         /// Decodificar lectura de QR de transferencia y almacenar
         /// en base de datos
         /// </summary>
-        /// <param name="payload"></param>
-        /// <returns></returns>
         private async Task RetrieveQRDataAsync(string payload)
         {
             // Char con la cantidad de insumos en bolsa
@@ -201,8 +299,6 @@ namespace RecipeControl.Views
         /// <summary>
         /// Impresión del compilado de insumos de la bolsa seleccionada desde a base da datos
         /// </summary>
-        /// <param name="payload"></param>
-        /// <returns></returns>
         private async Task ImprimirCompiladoInsumos(string payload)
         {
             // Validar valor de código único
@@ -350,13 +446,18 @@ namespace RecipeControl.Views
 
         }
 
+        // Fecha: 25 02 2026
+        // Registro de todos los datos de la bolsa incluido los insumos "solo KPI".
+        // registra en tabla dbo.MCR_MacroRegistro
+        private async Task RegistrarDatosBolsaMacro(string payload)
+        {
+
+        }
 
         /// <summary>
         /// Registrar el valor del insumo pesado actual en
         /// la base de datos con el índice de bolsa
         /// </summary>
-        /// <param name="payload"></param>
-        /// <returns></returns>
         private async Task RegistrarInsumoBolsaMacro(string payload)
         {
             // action;fecha;codigoUnico
@@ -379,7 +480,7 @@ namespace RecipeControl.Views
             {
                 MessageBox.Show($"Lectura inválida dle QR, reintentar", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
-            }            
+            }
 
             // Ejecutar funciones de pesado de insumos
             decimal net = await Ranger7000Service.RetrieveWeightAsync();
@@ -390,7 +491,7 @@ namespace RecipeControl.Views
             WeighInput.Text = net.ToString("0.0", CultureInfo.InvariantCulture);
 
             // === EJECUTAR GUARDADO DE DATOS EN BASE DE DATOS ===
-            int insumoId = Convert.ToInt32(SAPCodeCmb.SelectedValue);
+            int insumoId = Convert.ToInt32(SAPCodeCmb1.SelectedValue);
             int insumoLote = Convert.ToInt32(LoteInsumoInput.Text);
             decimal pesoObjetivo = await DatabaseService.GetPesoObjetivoAsync(insumoId) * 1000;
             decimal pesoReal = net;
@@ -410,24 +511,20 @@ namespace RecipeControl.Views
             }
         }
 
-        #endregion
-
-        // Fecha: 25 02 2026
-        // Registro de todos los datos de la bolsa incluido los insumos "solo KPI".
-        // registra en tabla dbo.MCR_MacroRegistro
-        private async Task RegistrarDatosBolsaMacro(string payload)
+        /// <summary>
+        /// Reemplaza valores que podrían dañar el archvio ZPL
+        /// </summary>
+        private static string EscapeForZpl(string s)
         {
-
+            return (s ?? "")
+                .Replace("^", "^^")
+                .Replace("\r", " ")
+                .Replace("\n", " ");
         }
 
-
-        #region Lógica de pre impresión de etiquetas bolsa vacía
-
-            /// <summary>
-            /// Función de impresión de múltiples etiquetas
-            /// </summary>
-            /// <param name="nTimes"></param>
-            /// <exception cref="InvalidOperationException"></exception>
+        /// <summary>
+        /// Función de impresión de múltiples etiquetas
+        /// </summary>
         private async void PrintEmptyNTimes(int nTimes)
         {
             // Valores de guardado de macro ingredientes
@@ -481,107 +578,6 @@ namespace RecipeControl.Views
                 }
             }
         }
-
-        /// <summary>
-        /// Reemplaza valores que podrían dañar el archvio ZPL
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        private static string EscapeForZpl(string s)
-        {
-            return (s ?? "")
-                .Replace("^", "^^")
-                .Replace("\r", " ")
-                .Replace("\n", " ");
-        }
-
         #endregion
-
-        //boton para capturar pesado
-        private async void Button_Click(object sender, RoutedEventArgs e)
-        {
-            var item1 = (ComboBoxDTO)SAPCodeCmb.SelectedItem;
-            decimal peso1 = item1.PesoFrima1;
-            var item2 = (ComboBoxDTO)SAPCodeCmb2.SelectedItem;
-            decimal peso2 = item2.PesoFrima1;
-            var item3 = (ComboBoxDTO)SAPCodeCmb3.SelectedItem;
-            decimal peso3 = item3.PesoFrima1;
-            var item4 = (ComboBoxDTO)SAPCodeCmb4.SelectedItem;
-            decimal peso4 = item4.PesoFrima1;
-
-            decimal pesoObj = Math.Round((peso1 + peso2 + peso3 + peso4) * 1000m, 1); // suma de pesos objetivo de insumos pasado a g
-            PesoObjLbl.Content = pesoObj.ToString("F1");
-            // Ejecutar funciones de pesado de insumos
-            decimal net = await Ranger7000Service.RetrieveWeightAsync();
-            WeighInput.Text = net.ToString();
-            //LoggerService.NotifySystem($"PesoFrima1: {pesoObj}");
-        }
-
-        // une todos los datos para generar el QR todo en uno
-        private async void Button2_Click(object sender, RoutedEventArgs e)
-        {
-
-
-
-            int insd1 = (SAPCodeCmb.SelectedValue != null) ? Convert.ToInt32(SAPCodeCmb.SelectedValue) : 1000;
-            int insd2 = (SAPCodeCmb2.SelectedValue != null) ? Convert.ToInt32(SAPCodeCmb2.SelectedValue) : 1000;
-            int insd3 = (SAPCodeCmb3.SelectedValue != null) ? Convert.ToInt32(SAPCodeCmb3.SelectedValue) : 1000;
-            int insd4 = (SAPCodeCmb4.SelectedValue != null) ? Convert.ToInt32(SAPCodeCmb4.SelectedValue) : 1000;
-
-            int lote = Convert.ToInt32(LoteInsumoInput.Text);
-
-            try
-            {
-                // 1) Fecha pesado
-                DateTime fechaCreacion = DateTime.Now;
-
-                // 2) Insert en DB y devuelve MacroRegistroId
-                int macroRegistroId = await DatabaseService.InsertMacroAndReturnIdAsync(fechaCreacion);
-
-                // 3) Mostrar en UI
-                DatetimeInput.Text = fechaCreacion.ToString("dd/MM/yyyy HH:mm:ss");
-                decimal PesoReal = Convert.ToDecimal(WeighInput.Text);
-
-                // 4) Código único basado en el ID (recomendado)
-                UnicodeInput.Text = $"{macroRegistroId}";
-
-                decimal PesoObj = Convert.ToDecimal(PesoObjLbl.Content);
-
-                await DatabaseService.InsertOrUpdateMacroTotalAsync(macroRegistroId, "op", fechaCreacion,lote, 10, PesoReal, PesoObj, insd1, insd2, insd3, insd4);
-                //_ = ZebraDS22Client.ConfirmBeepPatternAsync();
-
-                await ImprimirCompiladoInsumos2();  //llamo al extractor de datos de la bolsa para imprimir version final 25 02 2026
-
-                LoggerService.NotifySystem("QR Cargado correctamente");
-
-               
-
-            }
-            catch (Exception ex)
-            {
-
-            }
-        }
-
-        private void ProdNomCodeCmb_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void SAPCodeCmb2_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void SAPCodeCmb3_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void SAPCodeCmb4_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
     }
 }

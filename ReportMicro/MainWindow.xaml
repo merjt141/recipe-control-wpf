@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ReportMicro"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Button x:Name="BotonLogin" Content="Iniciar Sesión" HorizontalAlignment="Center" VerticalAlignment="Center" Width="116" Height="24" Background="#FFF3F0F0" Click="BotonLogin_Click"/>
 
