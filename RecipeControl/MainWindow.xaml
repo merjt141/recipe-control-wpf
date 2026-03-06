@@ -7,7 +7,14 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="180,59,0,0" VerticalAlignment="Top" Click="Button_Click"/>
+        <Button Content="INGRESAR" HorizontalAlignment="Center" Margin="0,97,0,0" VerticalAlignment="Top" Click="Button_Click" Height="29" Width="108"/>
+        <Image Margin="279,196,279,162" Source="/Image1.png" Stretch="Fill"/>
+        <Label
+            Content="PESAJE MICROINGREDIENTES" 
+            HorizontalAlignment="Center" 
+            Margin="0,32,0,0" 
+            VerticalAlignment="Top" FontSize="21" FontWeight="Bold"/>
+        <Label Content="JYS CONTROL AUTOMATION - SOFTWARE" HorizontalAlignment="Left" Margin="535,375,0,0" VerticalAlignment="Top" Foreground="#FF8E8B8B"/>
 
     </Grid>
 </Window>

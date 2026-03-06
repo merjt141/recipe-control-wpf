@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RecipeControl.Configuration;
-using RecipeControl.Services.Database;
-using RecipeControl.Views.RegisterModuleViews;
+using RecipeControl.Views;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,19 +19,16 @@ namespace RecipeControl
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly IDatabaseService _databaseService;
         private readonly AppSettings _appSettings;
         private readonly IServiceProvider _serviceProvider;
 
 
         public MainWindow(
-            IDatabaseService databaseService,
             AppSettings appSettings,
             IServiceProvider serviceProvider)
         {
             InitializeComponent();
 
-            _databaseService = databaseService;
             _appSettings = appSettings;
             _serviceProvider = serviceProvider;
         }

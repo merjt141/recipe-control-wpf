@@ -1,0 +1,53 @@
+﻿<Window x:Class="RecipeControl.Views.Configuracion"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RecipeControl.Views"
+        mc:Ignorable="d"
+        Title="Configuracion" Height="325" Width="810" ResizeMode="NoResize">
+    <Grid Margin="0,0,0,2">
+        <Button x:Name="BotonGuardaCOMBLZ" Content="Guarda COM" HorizontalAlignment="Left" Margin="154,117,0,0" VerticalAlignment="Top" Width="94" Click="BotonGuardaCOMBLZ_Click" FontSize="14"/>
+        <ComboBox x:Name="ComboSelecCOM" HorizontalAlignment="Left" Margin="15,116,0,0" VerticalAlignment="Top" Width="129" FontSize="14"/>
+        <Label Content="Puerto COM Actual - Balanza Frima:" HorizontalAlignment="Left" Margin="7,14,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold"/>
+        <Label x:Name="LabelComConf" Content="_______" HorizontalAlignment="Left" Margin="11,48,0,0" VerticalAlignment="Top" FontSize="14" Width="246"/>
+        <DataGrid x:Name="InsumosDataGrid"
+              HorizontalAlignment="Left"
+              Height="229"
+              Margin="291,50,0,0"
+              VerticalAlignment="Top"
+              Width="498"
+              AutoGenerateColumns="False"
+              CanUserAddRows="False"
+              IsReadOnly="False"
+              FontSize="12">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="InsumoId" Binding="{Binding InsumoId}" IsReadOnly="True" Width="70"/>
+                <DataGridTextColumn Header="CodigoSAP" Binding="{Binding Codigo}" IsReadOnly="True" Width="90"/>
+                <DataGridTextColumn Header="Descripcion" Binding="{Binding Descripcion}" IsReadOnly="True" Width="*"/>
+                <DataGridTextColumn Header="Unidad" Binding="{Binding Unidad}" IsReadOnly="True" Width="70"/>
+
+                <!-- ÚNICA EDITABLE -->
+                <DataGridTextColumn Header="PesoFrima1"
+                                Binding="{Binding PesoFrima1, StringFormat={}{0:N4}, UpdateSourceTrigger=PropertyChanged}"
+                                IsReadOnly="False"
+                                Width="90"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Botones para guardar/recargar pesos -->
+        <Button x:Name="BtnRecargarInsumos" Content="Recargar Insumos"
+            HorizontalAlignment="Left" Margin="500,19,0,0" VerticalAlignment="Top"
+            Width="113" Click="BtnRecargarInsumos_Click"/>
+
+        <Button x:Name="BtnGuardarPesos" Content="Guardar Pesos"
+            HorizontalAlignment="Left" Margin="669,18,0,0" VerticalAlignment="Top"
+            Width="120" Click="BtnGuardarPesos_Click"/>
+        <Label Content="Modifica Insumos Frima" HorizontalAlignment="Left" Margin="291,14,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold"/>
+        <Label Content="Modifica COM" HorizontalAlignment="Left" Margin="11,77,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold"/>
+        <Border Width="2"
+        Background="Gray"
+        HorizontalAlignment="Left"
+        Margin="275,0,0,0"/>
+    </Grid>
+</Window>

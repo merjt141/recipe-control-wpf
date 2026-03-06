@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using RecipeControl.Models.Config;
-using RecipeControl.Services.Serial;
-using RecipeControl.Views;
+using ReportMicro.Services.Database;
+using ReportMicro.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +8,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RecipeControl.Configuration
+namespace ReportMicro.Configuration
 {
     public static class DependencyInjection
     {
@@ -25,22 +24,20 @@ namespace RecipeControl.Configuration
             // ===== CONFIGURATION =====
             services.AddSingleton(config);
             services.AddSingleton(config.ConnectionStrings);
-            services.AddSingleton(config.ScaleEthernetPorts);
-            services.AddSingleton(config.ScaleEthernetPorts.Ports);
-            services.AddSingleton(config.SerialPortScale);
-            services.AddSingleton(config.SerialPortQR);
             services.AddSingleton(config.Database);
+            services.AddSingleton(config.Reports);
 
             // ===== INGFRAESTRUCTURE SERVICES =====
 
             // ===== REPOSITORIOS =====
 
+            // ===== HELPERS =====
+
             // ===== VIEWMODELS =====
 
             // ===== VIEWS =====
             services.AddTransient<MainWindow>();
-            services.AddTransient<RegisterModuleView>();
-           
+            services.AddTransient<ReportView>();
 
             return services;
         }

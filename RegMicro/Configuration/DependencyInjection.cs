@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using RecipeControl.Models.Config;
 using RecipeControl.Services.Serial;
 using RecipeControl.Views;
+using RecipeControl.Views.RegisterModuleViews;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,9 +25,6 @@ namespace RecipeControl.Configuration
             // ===== CONFIGURATION =====
             services.AddSingleton(config);
             services.AddSingleton(config.ConnectionStrings);
-            services.AddSingleton(config.ScaleEthernetPorts);
-            services.AddSingleton(config.ScaleEthernetPorts.Ports);
-            services.AddSingleton(config.SerialPortScale);
             services.AddSingleton(config.SerialPortQR);
             services.AddSingleton(config.Database);
 
@@ -35,12 +32,13 @@ namespace RecipeControl.Configuration
 
             // ===== REPOSITORIOS =====
 
+            // ===== HELPERS =====
+
             // ===== VIEWMODELS =====
+
 
             // ===== VIEWS =====
             services.AddTransient<MainWindow>();
-            services.AddTransient<RegisterModuleView>();
-           
 
             return services;
         }
