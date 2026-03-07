@@ -1,7 +1,7 @@
-﻿<Application x:Class="RecipeControl.App"
+﻿<Application x:Class="ReportMicro.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:RecipeControl">
+             xmlns:local="clr-namespace:ReportMicro">
     <Application.Resources>
          
     </Application.Resources>

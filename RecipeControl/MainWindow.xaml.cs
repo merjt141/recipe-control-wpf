@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RecipeControl.Configuration;
+using RecipeControl.Views;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,9 +19,24 @@ namespace RecipeControl
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private readonly AppSettings _appSettings;
+        private readonly IServiceProvider _serviceProvider;
+
+
+        public MainWindow(
+            AppSettings appSettings,
+            IServiceProvider serviceProvider)
         {
             InitializeComponent();
+
+            _appSettings = appSettings;
+            _serviceProvider = serviceProvider;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var RegisterModuleView = _serviceProvider.GetRequiredService<RegisterModuleView>();
+            RegisterModuleView.Show();
         }
     }
 }

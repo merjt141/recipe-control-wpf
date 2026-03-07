@@ -22,7 +22,7 @@ namespace RecipeControl.Configuration
         {
             // Build configuration from appsettings.json
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(AppContext.BaseDirectory)  //SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{GetEnvironment()}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
@@ -105,15 +105,9 @@ namespace RecipeControl.Configuration
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(_appSettings.SerialPortScale.PortName))
-            {
-                errorMessage = "No se ha configurado el puerto serial de balanza.";
-                return false;
-            }
-
             if (string.IsNullOrWhiteSpace(_appSettings.SerialPortQR.PortName))
             {
-                errorMessage = "No se ha configurado el puerto serial de lector QR.";
+                errorMessage = "No se ha configurado el puerto serial.";
                 return false;
             }
 

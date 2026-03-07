@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36518.9 d17.14
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11304.174
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeControl", "RecipeControl\RecipeControl.csproj", "{865097B2-8BF4-4FD3-B98D-847264D15266}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegMicro", "RegMicro\RegMicro.csproj", "{10AEB66F-8850-07B9-A2AA-8A807188518B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportMicro", "ReportMicro\ReportMicro.csproj", "{35EC89E6-E68D-1679-803D-44060AA68D76}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{865097B2-8BF4-4FD3-B98D-847264D15266}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{865097B2-8BF4-4FD3-B98D-847264D15266}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{865097B2-8BF4-4FD3-B98D-847264D15266}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10AEB66F-8850-07B9-A2AA-8A807188518B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10AEB66F-8850-07B9-A2AA-8A807188518B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10AEB66F-8850-07B9-A2AA-8A807188518B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10AEB66F-8850-07B9-A2AA-8A807188518B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35EC89E6-E68D-1679-803D-44060AA68D76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35EC89E6-E68D-1679-803D-44060AA68D76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35EC89E6-E68D-1679-803D-44060AA68D76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35EC89E6-E68D-1679-803D-44060AA68D76}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

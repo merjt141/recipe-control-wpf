@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Resources\Images\" />
+  </ItemGroup>
+
+  <ItemGroup>
 	<!-- ADO(mi patrona).NET for SQL Server -->
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.2" />
 
@@ -30,7 +34,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

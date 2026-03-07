@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using RecipeControl.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +14,7 @@ namespace RecipeControl.Configuration
     public class AppSettings
     {
         public ConnectionStrings ConnectionStrings { get; set; } = new();
-        public SerialPortSettings SerialPortScale { get; set; } = new();
         public SerialPortSettings SerialPortQR { get; set; } = new();
-        public ScaleEthernetPorts ScaleEthernetPorts { get; set; } = new();
         public DatabaseSettings Database {  get; set; } = new();
     }
 
@@ -36,12 +33,6 @@ namespace RecipeControl.Configuration
         public int MinPoolSize { get; set; } = 5;
         public int MaxPoolSize { get; set; } = 100;
 
-    }
-
-    public class ScaleEthernetPorts
-    {
-        public int Amount { get; set; } = 0;
-        public IEnumerable<EthernetScaleConfig> Ports { get; set; } = Array.Empty<EthernetScaleConfig>();
     }
 
     public class SerialPortSettings

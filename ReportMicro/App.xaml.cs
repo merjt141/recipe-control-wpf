@@ -1,12 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using RecipeControl.Configuration;
-using RecipeControl.Services.Serial;
-using RecipeControl.Views;
+using ReportMicro.Configuration;
 using System.Data;
-using System.Net.NetworkInformation;
 using System.Windows;
 
-namespace RecipeControl
+namespace ReportMicro
 {
     /// <summary>
     /// Interaction logic for App.xaml

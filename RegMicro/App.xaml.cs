@@ -50,6 +50,17 @@ namespace RecipeControl
                     return;
                 }
 
+                // Show test window on startup
+                //var testWindow = _serviceProvider.GetRequiredService<TestConnectionView>();
+                //var resultado = testWindow.ShowDialog();
+
+                // Show main windows on successfull test
+                //if (resultado == true || MessageBox.Show(
+                //    "¿Desea continuar sin probar las conexiones?",
+                //    "Advertencia",
+                //    MessageBoxButton.YesNo,
+                //    MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                //{
                 try
                 {
                     var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
@@ -59,6 +70,11 @@ namespace RecipeControl
                 {
                     MessageBox.Show(ex.ToString(), "Startup error");
                 }
+                //}
+                //else
+                //{
+                //    Shutdown();
+                //}
             }
             catch (Exception ex)
             {
